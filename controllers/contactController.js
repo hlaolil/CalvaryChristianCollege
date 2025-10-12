@@ -1,5 +1,5 @@
 exports.getContact = (req, res) => {
-  res.render('contact/index', { title: 'Contact Us' });
+  res.render('contact', { title: 'Contact Us' });
 };
 
 exports.sendContact = (req, res) => {

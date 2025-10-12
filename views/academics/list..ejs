@@ -1,0 +1,21 @@
+<%- include('../layout', { body: `
+  <div class="academics-container">
+    <h2>Academics</h2>
+    <a href="/academics/add" class="btn-primary">Add New Course</a>
+    <div class="course-list">
+      <% if (courses.length === 0) { %>
+        <p>No courses available.</p>
+      <% } else { %>
+        <% courses.forEach(course => { %>
+          <div class="course-box">
+            <h3><%= course.title %></h3>
+            <p><%= course.description %></p>
+            <% if (course.duration) { %>
+              <p><strong>Duration:</strong> <%= course.duration %></p>
+            <% } %>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+` }) %>

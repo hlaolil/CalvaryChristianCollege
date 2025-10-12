@@ -1,9 +1,11 @@
-<%- include('../layout', { body: `
-  <h2>Contact Us</h2>
-  <form action="/contact" method="POST">
-    <input type="text" name="name" placeholder="Your name" required>
-    <input type="email" name="email" placeholder="Your email" required>
-    <textarea name="message" placeholder="Your message"></textarea>
-    <button type="submit">Send</button>
-  </form>
+<%- include('layout', { body: `
+  <div class="contact-container">
+    <h2>Contact Us</h2>
+    <form action="/contact" method="POST" class="contact-form">
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email" required>
+      <textarea name="message" placeholder="Your message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
 ` }) %>

@@ -1,6 +1,53 @@
-<%- include('../layout', { body: `
-  <div class="hero">
-    <h2>Welcome to Calvary Christian College</h2>
-    <p>Equipping believers for ministry through the Word of God.</p>
-  </div>
+<%- include('layout', { body: `
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Welcome to Calvary Christian College</h1>
+      <p>Equipping believers for ministry through the Word of God.</p>
+      <a href="/about" class="btn-primary">Learn More</a>
+    </div>
+  </section>
+
+  <!-- Introduction Section -->
+  <section class="intro">
+    <h2>About Us</h2>
+    <p>
+      Calvary Christian College is committed to raising Christ-centered, Spirit-empowered servant leaders
+      who transform communities through discipleship and ministry. Join us to grow in faith, knowledge, and leadership.
+    </p>
+  </section>
+
+  <!-- Highlights Section: Vision, Mission, Core Values -->
+  <section class="highlights">
+    <div class="highlight-box">
+      <h3>Our Vision</h3>
+      <p>
+        To raise a generation of <strong>Christ-centered, Spirit-empowered servant leaders</strong>
+        who will transform communities and advance God’s Kingdom.
+      </p>
+    </div>
+    <div class="highlight-box">
+      <h3>Our Mission</h3>
+      <p>
+        To train and equip students through sound biblical teaching, practical leadership development,
+        and ministry training, empowering them to serve faithfully and lead with integrity.
+      </p>
+    </div>
+    <div class="highlight-box">
+      <h3>Core Values</h3>
+      <ul>
+        <li><strong>Christ-Centered:</strong> Placing Christ at the heart of all we do.</li>
+        <li><strong>Integrity:</strong> Upholding honesty and moral excellence.</li>
+        <li><strong>Servanthood:</strong> Leading by serving others with humility and love.</li>
+        <li><strong>Excellence:</strong> Striving for the highest standards.</li>
+        <li><strong>Community Impact:</strong> Transforming communities through gospel action.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Call-to-Action Section -->
+  <section class="cta">
+    <p>Ready to join us? Start your journey today!</p>
+    <a href="/register" class="btn-primary">Register Now</a>
+  </section>
 ` }) %>
