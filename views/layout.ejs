@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %> | Calvary Christian College</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Calvary Christian College</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about">About Us</a>
+      <a href="/academics">Academics</a>
+      <a href="/contact">Contact Us</a>
+    </nav>
+  </header>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <footer>
+    <p>&copy; <%= new Date().getFullYear() %> Calvary Christian College</p>
+  </footer>
+</body>
+</html>
