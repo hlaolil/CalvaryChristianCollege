@@ -1,27 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title><%= title %> | Calvary Christian College</title>
-  <link rel="stylesheet" href="/css/style.css" />
+  <meta charset="UTF-8">
+  <title><%= title || 'Calvary Christian College' %></title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>Calvary Christian College</h1>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-container">
+      <img src="/images/logo.png" alt="Calvary Christian College Logo" class="logo">
+      <h1>Calvary Christian College</h1>
+    </div>
     <nav>
-      <a href="/">Home</a>
-      <a href="/about">About Us</a>
-      <a href="/academics">Academics</a>
-      <a href="/contact">Contact Us</a>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/academics">Academics</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="/login">Login</a></li>
+      </ul>
     </nav>
   </header>
 
+  <!-- MAIN BODY -->
   <main>
     <%- body %>
   </main>
 
-  <footer>
-    <p>&copy; <%= new Date().getFullYear() %> Calvary Christian College</p>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-social">
+      <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+      <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+      <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+    </div>
+    <p>&copy; <%= new Date().getFullYear() %> Calvary Christian College. All rights reserved.</p>
   </footer>
+
+  <!-- Font Awesome for icons -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>
