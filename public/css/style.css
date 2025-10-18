@@ -489,4 +489,29 @@ main {
   background-color: #003d82;
 }
 
+.fancy-title {
+  font-family: serif; /* Or your preferred font, e.g., 'Georgia' for a classic look */
+  margin: 0; /* Reset default h1 margins */
+  line-height: 1.2; /* Tighten vertical spacing */
+}
+
+.word {
+  display: inline-block; /* Allows vertical alignment tweaks per word */
+  margin-right: 0; /* Small space between words */
+}
+
+.big-letter {
+  font-size: 2em; /* Big C's—make larger (e.g., 5em) or smaller as needed */
+  font-weight: bold;
+  line-height: 0.8; /* Pulls them up slightly for better alignment */
+  vertical-align: top;
+  display: inline-block;
+}
+
+.small-letters {
+  font-size: 1.5rem; /* Very small other letters—tweak to 0.2em for tinier */
+  font-weight: normal;
+  vertical-align: bottom; /* Aligns small letters to the top of big ones */
+  display: inline-block;
+}
 
