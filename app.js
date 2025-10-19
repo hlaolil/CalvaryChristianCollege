@@ -4,6 +4,7 @@ const path = require('path');
 const morgan = require('morgan');
 const session = require('express-session');
 const { connectDB } = require('./db/connect');
+const { ensureAuth } = require('./middleware/auth'); // Added for route protection
 
 // Load environment variables
 dotenv.config();
@@ -40,12 +41,13 @@ connectDB().then(() => {
 
   // MVC routes
   app.use('/', require('./routes/homeRoutes'));          // Home page
-  app.use('/academics', require('./routes/academics'));  // Academics dashboard/list/add
+  app.use('/apply', ensureAuth, require('./routes/applyRoutes')); // New: Protected application form
+  app.use('/academics', ensureAuth, require('./routes/academics'));  // Protected: Academics dashboard/list/add
   app.use('/contact', require('./routes/contactRoutes'));// Contact page
   app.use('/auth', require('./routes/authRoutes'));      // Login, Register, Logout
 
-  // API routes
-  app.use('/api/academics', require('./routes/api/academics')); // API JSON CRUD
+  // API routes (protected)
+  app.use('/api/academics', ensureAuth, require('./routes/api/academics')); // API JSON CRUD
 
   // 404 handler
   app.use((req, res) => {

@@ -5,8 +5,7 @@ const db = require('../db/connect');
 exports.getLogin = (req, res) => {
   res.render('login', { 
     error: null,
-    title: 'Login',
-    user: req.session?.user || null
+    title: 'Login'
   });
 };
 
@@ -20,8 +19,7 @@ exports.postLogin = async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.render('login', { 
         error: 'Invalid email or password',
-        title: 'Login',
-        user: req.session?.user || null
+        title: 'Login'
       });
     }
 
@@ -32,8 +30,7 @@ exports.postLogin = async (req, res) => {
     console.error(err);
     res.render('login', { 
       error: 'Server error. Please try again.',
-      title: 'Login',
-      user: req.session?.user || null
+      title: 'Login'
     });
   }
 };
@@ -42,8 +39,7 @@ exports.postLogin = async (req, res) => {
 exports.getRegister = (req, res) => {
   res.render('register', { 
     error: null,
-    title: 'Register',
-    user: req.session?.user || null
+    title: 'Register'
   });
 };
 
@@ -56,27 +52,25 @@ exports.postRegister = async (req, res) => {
     if (existingUser) {
       return res.render('register', { 
         error: 'Email already registered',
-        title: 'Register',
-        user: req.session?.user || null
+        title: 'Register'
       });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    await db.getDb().collection('users').insertOne({
+    const result = await db.getDb().collection('users').insertOne({
       name,
       email,
       password: hashedPassword,
     });
 
-    // Redirect to login page after successful registration
-    res.redirect('/auth/login');
+    // Auto-login after successful registration
+    req.session.user = { id: result.insertedId, name, email };
+    res.redirect('/'); // Redirect to home/dashboard
   } catch (err) {
     console.error(err);
     res.render('register', { 
       error: 'Server error. Please try again.',
-      title: 'Register',
-      user: req.session?.user || null
+      title: 'Register'
     });
   }
 };

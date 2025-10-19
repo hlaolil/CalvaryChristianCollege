@@ -4,8 +4,12 @@
 <body>
   <%- include('partials/header') %>
   <main>
-    <h1>About Us</h1>
-    <p>Detailed info about the college...</p>
+    <h1>Add Academic</h1>
+    <form action="/academics/add" method="POST">
+      <label>Title:</label>
+      <input name="title">
+      <button>Submit</button>
+    </form>
   </main>
   <%- include('partials/footer') %>
 </body>

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController'); // make sure path is correct
+const authController = require('../controllers/authController');
+
+console.log('Auth controller loaded:', authController ? 'OK' : 'FAILED'); // Temp debug
 
 // Login routes
 router.get('/login', authController.getLogin);

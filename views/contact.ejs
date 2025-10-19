@@ -1,11 +1,24 @@
-<%- include('layout', { body: `
-  <div class="contact-container">
-    <h2>Contact Us</h2>
-    <form action="/contact" method="POST" class="contact-form">
-      <input type="text" name="name" placeholder="Your name" required>
-      <input type="email" name="email" placeholder="Your email" required>
-      <textarea name="message" placeholder="Your message" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
-  </div>
-` }) %>
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: title }) %>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <div class="contact-container">
+      <h1>Contact Us</h1>
+      <% if (success) { %><p class="success">Message sent successfully!</p><% } %>
+      <% if (error) { %><p class="error"><%= error %></p><% } %>
+      <form action="/contact" method="POST" class="contact-form">
+        <label>Name:</label>
+        <input type="text" name="name" placeholder="Your name" required><br>
+        <label>Email:</label>
+        <input type="email" name="email" placeholder="Your email" required><br>
+        <label>Message:</label>
+        <textarea name="message" placeholder="Your message" rows="5" required></textarea><br>
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>

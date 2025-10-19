@@ -1,15 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { dashboard, listCourses, addCourseForm, addCourse } = require('../controllers/academicsController');
 
-// Dashboard page
-router.get('/', dashboard);
+// GET /academics (dashboard/list)
+router.get('/', (req, res) => {
+  // TODO: Fetch academics from DB
+  res.render('academics', { 
+    title: 'Academics Dashboard',
+    academics: [] // Placeholder
+  });
+});
 
-// List courses page
-router.get('/list', listCourses);
+// GET /academics/add
+router.get('/add', (req, res) => {
+  res.render('addAcademic', { title: 'Add Academic' });
+});
 
-// Add course page
-router.get('/add', addCourseForm);
-router.post('/add', addCourse);
+// POST /academics/add
+router.post('/add', async (req, res) => {
+  // TODO: Insert to DB
+  res.redirect('/academics');
+});
 
 module.exports = router;
