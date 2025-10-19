@@ -28,6 +28,7 @@ connectDB().then(() => {
   app.use('/', require('./routes/homeRoutes'));          // Home page
   app.use('/academics', require('./routes/academics'));  // Academics dashboard/list/add
   app.use('/contact', require('./routes/contactRoutes')); // Contact page
+  app.use('/register', require('./routes/authRoutes'))
 
   // API routes
   app.use('/api/academics', require('./routes/api/academics')); // API JSON CRUD

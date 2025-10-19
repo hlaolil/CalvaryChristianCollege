@@ -1,7 +1,6 @@
-<%- include('partials/header') %>
+<%- include('layout', { body: `
 <h1>Register</h1>
-<% if (error) { %><p style="color:red;"><%= error %></p><% } %>
-<form action="/auth/register" method="POST">
+<form action="/register" method="POST">
   <label>Name:</label>
   <input type="text" name="name" required><br>
   <label>Email:</label>
@@ -10,4 +9,4 @@
   <input type="password" name="password" required><br>
   <button type="submit">Register</button>
 </form>
-<%- include('partials/footer') %>
+` }) %>

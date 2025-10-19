@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs');
-const db = require('../db/conn');
+//const bcrypt = require('bcryptjs');
+const db = require('../db/connect');
 
 exports.getLogin = (req, res) => {
   res.render('login', { error: null });
@@ -18,7 +18,11 @@ exports.postLogin = async (req, res) => {
 };
 
 exports.getRegister = (req, res) => {
-  res.render('register', { error: null });
+  res.render('register', { 
+    error: null, 
+    title: 'Register', 
+    user: req.session?.user || null 
+  });
 };
 
 exports.postRegister = async (req, res) => {
@@ -36,7 +40,7 @@ exports.postRegister = async (req, res) => {
     password: hashedPassword,
   });
 
-  res.redirect('/auth/login');
+  res.redirect('/login');
 };
 
 exports.logout = (req, res) => {
