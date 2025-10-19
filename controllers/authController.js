@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const db = require('../db/conn');
+const db = require('../db/connect');
 
 exports.getLogin = (req, res) => {
   res.render('login', { error: null });
