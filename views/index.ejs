@@ -1,65 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', { title: title }) %>
-<body>
-  <%- include('partials/header') %>
-  <main>
-    <!-- Hero Section -->
-    <section class="hero" style="background-image: url('/images/hero.jpg');">
-      <div class="hero-overlay">
-        <div class="hero-content">
-          <h1>Welcome to Calvary Christian College</h1>
-          <p>Equipping believers for ministry through the Word of God.</p>
+  <%- include('partials/head', { title: title }) %>
+  <body>
+    <%- include('partials/header') %>
+    <main>
+      <!-- Hero Section -->
+      <section class="hero" style="background-image: url('/images/hero.jpg');" loading="lazy">
+        <div class="hero-overlay">
+          <div class="hero-content">
+            <h1>Welcome to Calvary Christian College</h1>
+            <p>Equipping believers for ministry through the Word of God.</p>
+            <a href="/about" class="btn-primary">Learn More</a>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Introduction Section -->
-    <section class="intro">
-      <h2>About Us</h2>
-      <p>
-        Calvary Christian College is committed to raising Christ-centered, Spirit-empowered servant leaders
-        who transform communities through discipleship and ministry. Join us to grow in faith, knowledge, and leadership.
-      </p>
-    </section>
-
-    <!-- Highlights Section: Vision, Mission, Core Values -->
-    <section class="highlights">
-      <div class="highlight-box">
-        <h3>Our Vision</h3>
-        <p>To raise a generation of <strong>Christ-centered, Spirit-empowered servant leaders</strong>
-        who will transform communities and advance God’s Kingdom.</p>
-      </div>
-      <div class="highlight-box">
-        <h3>Our Mission</h3>
-        <p>To train and equip students through sound biblical teaching, practical leadership development,
-        and ministry training, empowering them to serve faithfully and lead with integrity.</p>
-      </div>
-      <div class="highlight-box">
-        <h3>Core Values</h3>
-        <ul>
-          <li><strong>Christ-Centered:</strong> Placing Christ at the heart of all we do.</li>
-          <li><strong>Integrity:</strong> Upholding honesty and moral excellence.</li>
-          <li><strong>Servanthood:</strong> Leading by serving others with humility and love.</li>
-          <li><strong>Excellence:</strong> Striving for the highest standards.</li>
-          <li><strong>Community Impact:</strong> Transforming communities through gospel action.</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Call-to-Action Section -->
-    <% if (!user) { %>
-      <section class="cta">
-        <p>Ready to join us? Start your journey today!</p>
-        <a href="/auth/login" class="btn-primary">Apply Now</a>
       </section>
-    <% } else { %>
-      <section class="cta">
-        <p>Welcome, <%= user.name %>! Ready to apply?</p>
-        <a href="/apply" class="btn-primary">Fill Application Form</a>
+
+      <!-- First Grid Section -->
+      <section class="grid-section">
+        <div class="grid-item">
+          <img src="/images/vision.jpg" alt="Vision">
+          <h3>Our Vision</h3>
+          <p>Raising Christ-centered, Spirit-empowered servant leaders.</p>
+        </div>
+        <div class="grid-item">
+          <img src="/images/mission.jpg" alt="Mission">
+          <h3>Our Mission</h3>
+          <p>Training and equipping students for ministry and leadership.</p>
+        </div>
+        <div class="grid-item">
+          <img src="/images/values.jpg" alt="Core Values">
+          <h3>Core Values</h3>
+          <p>Christ-Centered • Integrity • Servanthood • Excellence • Impact</p>
+        </div>
       </section>
-    <% } %>
-  </main>
-  <%- include('partials/footer') %>
-</body>
+
+      <!-- Call-to-Action Section -->
+      <% if (!user) { %>
+        <section class="cta">
+          <p>Ready to join us? Start your journey today!</p>
+          <a href="/auth/login" class="btn-primary">Apply Now</a>
+        </section>
+      <% } else { %>
+        <section class="cta">
+          <p>Welcome, <%= user.name %>! Ready to apply?</p>
+          <a href="/apply" class="btn-primary">Fill Application Form</a>
+        </section>
+      <% } %>
+
+      <!-- Second Grid Section -->
+      <section class="grid-section">
+        <div class="grid-item">
+          <img src="/images/discipleship.jpg" alt="Discipleship">
+          <h3>Discipleship</h3>
+          <p>Grow deeper in your faith and spiritual walk with Christ.</p>
+        </div>
+        <div class="grid-item">
+          <img src="/images/ministry.jpg" alt="Ministry Training">
+          <h3>Ministry Training</h3>
+          <p>Get equipped to serve in your calling with excellence.</p>
+        </div>
+        <div class="grid-item">
+          <img src="/images/community.jpg" alt="Community Impact">
+          <h3>Community Impact</h3>
+          <p>Transforming communities through the power of the Gospel.</p>
+        </div>
+      </section>
+    </main>
+    <%- include('partials/footer') %>
+  </body>
 </html>

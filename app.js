@@ -42,12 +42,11 @@ connectDB().then(() => {
   // MVC routes
   app.use('/', require('./routes/homeRoutes'));          // Home page
   app.use('/apply', ensureAuth, require('./routes/applyRoutes')); // New: Protected application form
-  app.use('/academics', ensureAuth, require('./routes/academics'));  // Protected: Academics dashboard/list/add
+  app.use('/academics', require('./routes/academics'));  // Protected: Academics dashboard/list/add
   app.use('/contact', require('./routes/contactRoutes'));// Contact page
   app.use('/auth', require('./routes/authRoutes'));      // Login, Register, Logout
 
-  // API routes (protected)
-  app.use('/api/academics', ensureAuth, require('./routes/api/academics')); // API JSON CRUD
+ 
 
   // 404 handler
   app.use((req, res) => {
