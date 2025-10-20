@@ -1,12 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', { title: title }) %>
-<body>
-  <%- include('partials/header') %>
-  <main>
-    <h1>About Us</h1>
-    <p>Detailed info about the college...</p>
-  </main>
-  <%- include('partials/footer') %>
-</body>
+  <%- include('partials/head', { title: 'About Us' }) %>
+  <body>
+    <%- include('partials/header') %>
+    <main class="container about-page">
+      <section>
+        <h1>About Us</h1>
+        <p>
+          Calvary Christian College is committed to raising Christ-centered, Spirit-empowered servant leaders who transform communities through discipleship and ministry. Join us to grow in faith, knowledge, and leadership.
+        </p>
+      </section>
+
+      <section>
+        <h2>Our Vision</h2>
+        <p>
+          To raise a generation of Christ-centered, Spirit-empowered servant leaders who will transform communities and advance God’s Kingdom.
+        </p>
+      </section>
+
+      <section>
+        <h2>Our Mission</h2>
+        <p>
+          To train and equip students through sound biblical teaching, practical leadership development, and ministry training, empowering them to serve faithfully and lead with integrity.
+        </p>
+      </section>
+
+      <section>
+        <h2>Core Values</h2>
+        <ul>
+          <li><strong>Christ-Centered:</strong> Placing Christ at the heart of all we do.</li>
+          <li><strong>Integrity:</strong> Upholding honesty and moral excellence.</li>
+          <li><strong>Servanthood:</strong> Leading by serving others with humility and love.</li>
+          <li><strong>Excellence:</strong> Striving for the highest standards.</li>
+          <li><strong>Community Impact:</strong> Transforming communities through gospel action.</li>
+        </ul>
+      </section>
+
+      <section class="cta">
+        <h3>Ready to join us?</h3>
+        <p>Start your journey today!</p>
+        <a href="/apply" class="btn-primary">Apply Now</a>
+      </section>
+    </main>
+    <%- include('partials/footer') %>
+  </body>
 </html>

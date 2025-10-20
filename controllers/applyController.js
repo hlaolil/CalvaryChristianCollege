@@ -11,28 +11,40 @@ exports.getApply = (req, res) => {
 
 // POST /apply
 exports.postApply = async (req, res) => {
-  const { program, semester, message } = req.body;
   const user = req.session.user;
 
   try {
-    // Basic validation
-    if (!program || !semester) {
+    // Required fields
+    const requiredFields = [
+      'phone', 'dob', 'street_address', 'town', 'district', 'postal_code',
+      'high_school', 'grad_year', 'salvation', 'baptism', 'holy_spirit',
+      'current_church_name', 'current_church_city', 'current_church_country',
+      'pastor_name', 'church_member', 'church_denomination', 'personal_denomination',
+      'ministerial_credentials', 'ministry_positions', 'national_leader_name',
+      'national_leader_position', 'national_leader_address', 'program', 'semester'
+    ];
+
+    const missingFields = requiredFields.filter(field => !req.body[field] || req.body[field].trim() === '');
+    if (missingFields.length > 0) {
       return res.render('apply', { 
         title: 'Application Form',
-        error: 'Program and semester are required.',
+        error: `Missing or empty required fields: ${missingFields.join(', ')}.`,
         success: false
       });
     }
 
-    await db.getDb().collection('applications').insertOne({
+    // Prepare data, ensuring optionals are set
+    const applicationData = {
       userId: user.id,
       name: user.name,
       email: user.email,
-      program,
-      semester,
-      message: message || '',
+      ...req.body,
+      message: req.body.message || '',
+      credential_denomination: req.body.credential_denomination || '',
       submittedAt: new Date()
-    });
+    };
+
+    await db.getDb().collection('applications').insertOne(applicationData);
 
     res.redirect('/apply?success=true');
   } catch (err) {
