@@ -4,8 +4,13 @@
 <body>
   <%- include('partials/header') %>
   <main>
-    <h1>About Us</h1>
-    <p>Detailed info about the college...</p>
+    <h1>Academics Dashboard</h1>
+    <ul>
+      <% academics.forEach(ac => { %>
+        <li><%= ac.title %></li>
+      <% }); %>
+    </ul>
+    <a href="/academics/add">Add New</a>
   </main>
   <%- include('partials/footer') %>
 </body>

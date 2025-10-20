@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <title><%= title || 'Calvary Christian College' %></title>
   <link rel="stylesheet" href="/css/style.css">
-
-
 </head>
 <body>
   <!-- HEADER -->
@@ -30,8 +28,16 @@
         <li><a href="/about">About Us</a></li>
         <li><a href="/academics">Academics</a></li>
         <li><a href="/contact">Contact Us</a></li>
+        <% if (user) { %><li><a href="/apply">Apply</a></li><% } %>
       </ul>
     </nav>
+    <!-- User nav if logged in -->
+    <% if (user) { %>
+      <div class="user-nav">
+        <span>Welcome, <%= user.name %>!</span>
+        <a href="/auth/logout">Logout</a>
+      </div>
+    <% } %>
   </header>
 
   <!-- MAIN BODY -->

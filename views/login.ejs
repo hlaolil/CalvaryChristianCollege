@@ -1,15 +1,28 @@
-<%- include('layout', { title: 'Login', body: `
-<h1>Login</h1>
-
-<form action="/auth/login" method="POST">
-  <label>Email:</label>
-  <input type="email" name="email" required>
-  
-  <label>Password:</label>
-  <input type="password" name="password" required>
-
-  <button type="submit">Login</button>
-</form>
-
-<p>Don't have an account? <a href="/auth/register">Register here</a></p>
-` }) %>
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: title }) %>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <h1>Login</h1>
+    <% if (user) { %>
+      <p>Welcome back, <%= user.name %>! <a href="/academics">Go to Dashboard</a> | <a href="/auth/logout">Logout</a></p>
+    <% } else { %>
+      <% if (error) { %><p class="error"><%= error %></p><% } %>
+    <div class="auth-container">
+      <form action="/auth/login" method="POST">
+        <label>Email:</label>
+        <input type="email" name="email" value="<%= user ? user.email : '' %>" required>
+        <br>
+        <label>Password:</label>
+        <input type="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+      <p>Don't have an account? <a href="/auth/register">Register here</a></p>
+    <% } %>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>

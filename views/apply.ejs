@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: title }) %>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <h1>Application Form</h1>
+    <% if (success) { %><p class="success">Application submitted successfully!</p><% } %>
+    <% if (error) { %><p class="error"><%= error %></p><% } %>
+    <% if (user) { %>
+      <form action="/apply" method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" value="<%= user.name %>" readonly><br>
+        <label>Email:</label>
+        <input type="email" name="email" value="<%= user.email %>" readonly><br>
+        <label>Program:</label>
+        <select name="program" required>
+          <option value="">Select Program</option>
+          <option value="Theology">Theology</option>
+          <option value="Leadership">Leadership</option>
+          <option value="Ministry">Ministry</option>
+          <option value="Biblical Studies">Biblical Studies</option>
+        </select><br>
+        <label>Semester:</label>
+        <select name="semester" required>
+          <option value="">Select Semester</option>
+          <option value="Fall 2025">Fall 2025</option>
+          <option value="Spring 2026">Spring 2026</option>
+          <option value="Summer 2026">Summer 2026</option>
+        </select><br>
+        <label>Message (Optional):</label>
+        <textarea name="message" rows="4" cols="50"></textarea><br>
+        <button type="submit">Submit Application</button>
+      </form>
+      <p><a href="/">Back to Home</a></p>
+    <% } else { %>
+      <p>You must be logged in to apply. <a href="/auth/login">Login here</a></p>
+    <% } %>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>
