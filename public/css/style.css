@@ -694,3 +694,11 @@ main {
   border-radius: 10px;
   margin-bottom: 1rem;
 }
+select[name="role"], input[name="adminSecret"], input[name="studentNumber"] {
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+.error {
+  color: red;
+}
