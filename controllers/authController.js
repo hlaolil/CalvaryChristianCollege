@@ -23,8 +23,8 @@ exports.postLogin = async (req, res) => {
       });
     }
 
-    // Save user info in session
-    req.session.user = { id: user._id, name: user.name, email: user.email };
+    // Save user info in session, including role
+    req.session.user = { id: user._id, name: user.name, email: user.email, role: user.role };
     res.redirect('/'); // redirect to home/dashboard after login
   } catch (err) {
     console.error(err);
@@ -39,38 +39,80 @@ exports.postLogin = async (req, res) => {
 exports.getRegister = (req, res) => {
   res.render('register', { 
     error: null,
-    title: 'Register'
+    title: 'Register',
+    roles: ['applicant', 'student', 'alumni', 'admin']
   });
 };
 
 // POST /auth/register
 exports.postRegister = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role, adminSecret, studentNumber } = req.body;
+  const validRoles = ['applicant', 'student', 'alumni', 'admin'];
 
   try {
+    // Validate role
+    if (!validRoles.includes(role)) {
+      return res.render('register', { 
+        error: 'Invalid role selected',
+        title: 'Register',
+        roles: validRoles
+      });
+    }
+
+    // Check for existing user
     const existingUser = await db.getDb().collection('users').findOne({ email });
     if (existingUser) {
       return res.render('register', { 
         error: 'Email already registered',
-        title: 'Register'
+        title: 'Register',
+        roles: validRoles
       });
     }
 
+    // Validate admin role with secret key
+    if (role === 'admin' && adminSecret !== process.env.ADMIN_SECRET_KEY) {
+      return res.render('register', { 
+        error: 'Invalid admin secret key',
+        title: 'Register',
+        roles: validRoles
+      });
+    }
+
+    // Validate student role with student number
+    if (role === 'student') {
+      if (!studentNumber || !/^[A-Z0-9]{8,12}$/.test(studentNumber)) {
+        return res.render('register', { 
+          error: 'Invalid student number (must be 8-12 alphanumeric characters)',
+          title: 'Register',
+          roles: validRoles
+        });
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const result = await db.getDb().collection('users').insertOne({
+    const userData = {
       name,
       email,
       password: hashedPassword,
-    });
+      role
+    };
+
+    // Add studentNumber to user document for students
+    if (role === 'student') {
+      userData.studentNumber = studentNumber;
+    }
+
+    const result = await db.getDb().collection('users').insertOne(userData);
 
     // Auto-login after successful registration
-    req.session.user = { id: result.insertedId, name, email };
+    req.session.user = { id: result.insertedId, name, email, role };
     res.redirect('/'); // Redirect to home/dashboard
   } catch (err) {
     console.error(err);
     res.render('register', { 
       error: 'Server error. Please try again.',
-      title: 'Register'
+      title: 'Register',
+      roles: validRoles
     });
   }
 };
@@ -82,7 +124,7 @@ exports.logout = (req, res) => {
       console.error(err);
       return res.redirect('/');
     }
-    res.clearCookie('connect.sid'); // optional: clear session cookie
+    res.clearCookie('connect.sid');
     res.redirect('/auth/login');
   });
 };
