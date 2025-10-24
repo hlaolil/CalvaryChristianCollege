@@ -16,11 +16,32 @@
         <input type="email" name="email" required><br>
         <label>Password:</label>
         <input type="password" name="password" required><br>
+        <label>Role:</label>
+        <select name="role" id="role" required>
+          <% roles.forEach(role => { %>
+            <option value="<%= role %>"><%= role.charAt(0).toUpperCase() + role.slice(1) %></option>
+          <% }) %>
+        </select><br>
+        <div id="admin-secret" style="display: none;">
+          <label>Admin Secret Key:</label>
+          <input type="text" name="adminSecret"><br>
+        </div>
+        <div id="student-number" style="display: none;">
+          <label>Student Number:</label>
+          <input type="text" name="studentNumber"><br>
+        </div>
         <button type="submit">Register</button>
       </form>
       <p>Already have an account? <a href="/auth/login">Login here</a></p>
     <% } %>
   </main>
   <%- include('partials/footer') %>
+  <script>
+    document.getElementById('role').addEventListener('change', function() {
+      const role = this.value;
+      document.getElementById('admin-secret').style.display = role === 'admin' ? 'block' : 'none';
+      document.getElementById('student-number').style.display = role === 'student' ? 'block' : 'none';
+    });
+  </script>
 </body>
 </html>
