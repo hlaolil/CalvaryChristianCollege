@@ -8,7 +8,19 @@
       <li><a href="/about">About Us</a></li>
       <li><a href="/academics">Academics</a></li>
       <li><a href="/contact">Contact Us</a></li>
-      <% if (user) { %><li><a href="/apply">Apply</a></li><% } %>
+      <% if (user) { %>
+        <% if (user.role === 'applicant') { %>
+          <li><a href="/apply">Apply</a></li>
+        <% } else if (user.role === 'alumni') { %>
+          <li><a href="/alumni">Join Alumni Community</a></li>
+        <% } else if (user.role === 'student') { %>
+          <li><a href="/student-portal">Student Portal</a></li>
+        <% } else if (user.role === 'admin') { %>
+          <li><a href="/apply">Apply</a></li>
+          <li><a href="/alumni">Join Alumni Community</a></li>
+          <li><a href="/student-portal">Student Portal</a></li>
+        <% } %>
+      <% } %>
     </ul>
   </nav>
   <% if (user) { %>
