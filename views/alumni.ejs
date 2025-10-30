@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: title }) %>
+<body>
+  <%- include('partials/header') %>
+  <main>
+    <h1>Application Form</h1>
+    <% if (success) { %><p class="success">Registration submitted successfully!</p><% } %>
+    <% if (error) { %><p class="error"><%= error %></p><% } %>
+    <% if (user) { %>
+      <form action="/alumni" method="POST">
+        <h2>Personal Information</h2>
+        <label>Name:</label>
+        <input type="text" name="name" value="<%= user.name %>" readonly><br>
+        
+        <label>Email:</label>
+        <input type="email" name="email" value="<%= user.email %>" readonly><br>
+        
+        <label>Phone Number:</label>
+        <input type="tel" name="phone" required placeholder="+266 ..."><br>
+        
+        <label>Date of Birth:</label>
+        <input type="date" name="dob" required><br>
+        
+        <label>Address:</label>
+        <input type="text" name="street_address" required placeholder="Street Address"><br>
+        
+        <label>Town/City:</label>
+        <input type="text" name="town" required placeholder="Town/City"><br>
+        
+        <label>District:</label>
+        <select name="district" required>
+          <option value="">Select District</option>
+          <option value="Berea">Berea</option>
+          <option value="Butha-Buthe">Butha-Buthe</option>
+          <option value="Leribe">Leribe</option>
+          <option value="Mafeteng">Mafeteng</option>
+          <option value="Maseru">Maseru</option>
+          <option value="Mohale's Hoek">Mohale's Hoek</option>
+          <option value="Mokhotlong">Mokhotlong</option>
+          <option value="Qacha's Nek">Qacha's Nek</option>
+          <option value="Quthing">Quthing</option>
+          <option value="Thaba-Tseka">Thaba-Tseka</option>
+        </select><br>
+        
+        <label>Postal Code:</label>
+        <input type="text" name="postal_code" required placeholder="Postal Code"><br>
+        
+        <label>Country:</label>
+        <input type="text" name="country" value="Lesotho" readonly><br>
+        
+        <label>Graduation Year:</label>
+        <input type="number" name="grad_year" required min="1900" max="2030" placeholder="Year"><br>
+      <br>
+        
+        <label>Current Church Name *:</label>
+        <input type="text" name="current_church_name" required placeholder="Church Name"><br>
+        
+        <label>Current Church City *:</label>
+        <input type="text" name="current_church_city" required placeholder="City"><br>
+        
+        <label>Current Church Country *:</label>
+        <input type="text" name="current_church_country" required placeholder="Country"><br>
+        
+        <label>Pastor's Name *:</label>
+        <input type="text" name="pastor_name" required placeholder="Pastor's Full Name"><br>
+        
+        <label>Are you a member? *:</label>
+        <select name="church_member" required>
+          <option value="">Select</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select><br>
+        
+        <label>Church Denominational Affiliation *:</label>
+        <input type="text" name="church_denomination" required placeholder="Denominational Affiliation"><br>
+        
+        <label>Do you have ministerial credentials? *:</label>
+        <select name="ministerial_credentials" required>
+          <option value="">Select</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select><br>
+        
+        <br>
+        
+        <label>Ministry Positions *:</label>
+        <textarea name="ministry_positions" rows="4" cols="50" required placeholder="Examples: Pastor, Missionary, College Teacher (etc.). Please list ALL current ministry positions, along with the full name of the church or institution for each."></textarea><br>
+        
+        <label>Your National Church Leader Name *:</label>
+        <input type="text" name="national_leader_name" required placeholder="Name"><br>
+        
+        <label>Position (e.g., superintendent, bishop, general overseer, apostle, pastor, prophet, reverend, etc) *:</label>
+        <input type="text" name="national_leader_position" required placeholder="Position"><br>
+        
+        <label>Address *:</label>
+        <textarea name="national_leader_address" rows="3" cols="50" required placeholder="Address and Contact Number"></textarea><br>
+        
+        <br>
+        
+        <label>Message (Optional):</label>
+        <textarea name="message" rows="4" cols="50" placeholder="Any additional comments or questions."></textarea><br>
+        <p>Annual Subscrption Fee: M200</p>
+        <button type="submit">Submit Registration</button>
+      </form>
+      <p><a href="/">Back to Home</a></p>
+    <% } else { %>
+      <p>You must be logged in to apply. <a href="/auth/login">Login here</a></p>
+    <% } %>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>
