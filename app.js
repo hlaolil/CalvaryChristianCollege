@@ -19,12 +19,11 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session middleware (upgraded)
 app.use(session({
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
+    mongoUrl: `${process.env.MONGODB_URI}/${process.env.ccdb}`,  // Append DB name here
     collectionName: 'sessions',
-    ttl: 14 * 24 * 60 * 60
+    ttl: 14 * 24 * 60 * 60  // 14 days
   }),
   secret: process.env.SESSION_SECRET || 'fallback-dev-secret',
   resave: false,
