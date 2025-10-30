@@ -42,6 +42,7 @@ connectDB().then(() => {
   // MVC routes
   app.use('/', require('./routes/homeRoutes'));          // Home page
   app.use('/apply', ensureAuth, require('./routes/applyRoutes')); // New: Protected application form
+  app.use('/alumni', ensureAuth, require('./routes/alumniRoutes')); // New: Protected application form
   app.use('/academics', require('./routes/academics'));  // Protected: Academics dashboard/list/add
   app.use('/contact', require('./routes/contactRoutes'));// Contact page
   app.use('/auth', require('./routes/authRoutes'));      // Login, Register, Logout
