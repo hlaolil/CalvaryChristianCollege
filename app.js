@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   store: MongoStore.create({
-    mongoUrl: `${process.env.MONGODB_URI}/${process.env.ccdb}`,  // Append DB name here
+    mongoUrl: `${process.env.MONGODB_URI}/${process.env.DB_NAME}`,  // Append DB name here
     collectionName: 'sessions',
     ttl: 14 * 24 * 60 * 60  // 14 days
   }),
