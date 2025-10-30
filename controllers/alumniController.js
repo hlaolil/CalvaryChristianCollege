@@ -32,7 +32,7 @@ exports.postAlumni = async (req, res) => {
     }
 
     // Prepare data, ensuring optionals are set
-    const applicationData = {
+    const alumniData = {
       userId: user.id,
       name: user.name,
       email: user.email,
