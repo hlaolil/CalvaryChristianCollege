@@ -1,46 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', { title: title }) %>
+<%- include('partials/head', { title: 'Academics Dashboard' }) %>
 <body>
   <%- include('partials/header') %>
   <main>
     <h1>Academics Dashboard</h1>
-    <p>Explore our programs organized by level. Click on a program to view details.</p>
+    <p>Explore our programs organized by level. Click on a program to view detailed modules.</p>
 
-    <!-- PDF Path -->
-    <% const pdfPath = "/documents/ministry-prospectus-2016.pdf"; %>
-
+    <!-- Level 1 Programs -->
     <h2>Level 1 Programs</h2>
-    <ul>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 1 Certificate in Christian Discipleship</a></li>
+    <ul class="program-list">
+      <li>
+        <details>
+          <summary><strong>Level 1 Certificate in Christian Discipleship</strong></summary>
+          <div class="module-content">
+            <h4>Phase 1: Certificate in Christian Discipleship</h4>
+            <ol>
+              <li><strong>Module 1. Christian Basics 1 (CHB1)</strong> ▪ CHRISTIAN CHARACTER</li>
+              <li><strong>2. Old Testament Survey 1 (OTS1)</strong> ▪ The Bible, Genesis to Joshua</li>
+              <li><strong>3. Values of Christ (VCH)</strong> ▪ 31 Values and Sermon on the Mount</li>
+              <li><strong>4. Christian Basics 2 (CHB2)</strong> ▪ PRAYER (3 Volumes)</li>
+              <li><strong>5. The Gospels and Acts (GSA)</strong> ▪ Matthew, Luke, John & Acts</li>
+              <li><strong>6. Discipleship Growth 1 (DGR1)</strong> ▪ HOLY SPIRIT – LEADING</li>
+              <li><strong>7. Survey of the Letters (SLT)</strong> 
+                <ul>
+                  <li>THE GODHEAD</li>
+                  <li>FOUNDATION DOCTRINES</li>
+                  <li>PERSONAL DEVELOPMENT</li>
+                  <li>NEW COVENANT</li>
+                  <li>FINANCIAL WISDOM</li>
+                  <li>PRIORITIES OF LIFE</li>
+                  <li>THE WHOLE MAN – Spirit Soul Body</li>
+                  <li>HOLY SPIRIT – FRUIT</li>
+                  <li>FAITH</li>
+                </ul>
+                <em>Note: Attend lectures, do self-study using readers, group work</em>
+              </li>
+            </ol>
+          </div>
+        </details>
+      </li>
     </ul>
-    
+
+    <!-- Level 2 Programs -->
     <h2>Level 2 Programs</h2>
-    <ul>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 2 Diploma in Christian Leadership</a></li>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 2 Certificate in Theology(Coming Soon)</a></li>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 2 Certificate in Biblical Studies(Coming Soon)</a></li>
+    <ul class="program-list">
+      <li>
+        <details>
+          <summary><strong>Level 2 Diploma in Christian Leadership</strong></summary>
+          <div class="module-content">
+            <h4>Phase 2: Diploma in Leadership</h4>
+            <ol>
+              <li><strong>1. Equipping for Victory 1 (QPV1)</strong> ▪ The Bible, Judges to Song of Songs</li>
+              <li><strong>2. Old Testament Survey 2 (OTS2)</strong> ▪ Biblical perspectives on marriage</li>
+              <li><strong>3. Marriage and Family (MRF)</strong> ▪ Biblical perspectives on marriage</li>
+              <li><strong>4. Christian Maturity 1 (CHM1)</strong> 
+                <ul>
+                  <li>LIFE OF ADORATION</li>
+                  <li>THE LOVE WALK</li>
+                  <li>FAMILY LIFE</li>
+                  <li>RAISING CHILDREN</li>
+                </ul>
+              </li>
+              <li><strong>5. Study of Romans (SRM)</strong> ▪ The Gospel of Jesus as explained in Romans</li>
+              <li><strong>6. Christian Leadership 1 (CHL1)</strong>
+                <ul>
+                  <li>MOTIVATION</li>
+                  <li>CHURCH ADMINISTRATION</li>
+                  <li>BASIC LEADERS COURSE</li>
+                  <li>MINISTRY OF LEADERSHIP</li>
+                </ul>
+              </li>
+              <li><strong>7. Gospel of John 1 (GJH1)</strong> ▪ A verse by verse study of the first half of John's Gospel</li>
+            </ol>
+          </div>
+        </details>
+      </li>
+      <li><em>Level 2 Certificate in Theology (Coming Soon)</em></li>
+      <li><em>Level 2 Certificate in Biblical Studies (Coming Soon)</em></li>
     </ul>
-    
+
+    <!-- Level 3 Programs -->
     <h2>Level 3 Programs</h2>
-    <ul>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 3 Advanced Diploma in Ministry</a></li>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 3 Diploma in Theology(Coming Soon)</a></li>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 3 Diploma in Biblical Studies(Coming Soon)</a></li>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 3 Diploma in Business Leadership(Coming Soon)</a></li>
+    <ul class="program-list">
+      <li>
+        <details>
+          <summary><strong>Level 3 Advanced Diploma in Ministry</strong></summary>
+          <div class="module-content">
+            <h4>Phase 3: Advanced Diploma in Ministry</h4>
+            <ol>
+              <li><strong>1. Ministry Principles & Praxis 1 (MPR1)</strong>
+                <ul>
+                  <li>ANALYSIS OF MINISTRY</li>
+                  <li>SUPPORTIVE GIFTS</li>
+                  <li>PRACTICAL MINISTRY</li>
+                  <li>EVANGELISM TRAINING</li>
+                  <li>SOULWINNER'S GUIDE</li>
+                </ul>
+              </li>
+              <li><strong>2. Old Testament Survey 3 (OTS3)</strong> ▪ The Prophets, Isaiah to Malachi</li>
+              <li><strong>3. Prescriptions of Christ (PCH)</strong> ▪ Various prescriptions for handling situations</li>
+              <li><strong>4. Pastoral Training 1 (PTR1)</strong>
+                <ul>
+                  <li>THE ART OF INTERPRETATION</li>
+                  <li>THE ART OF PREACHING</li>
+                  <li>COMMUNICATION IN CONTEXT</li>
+                  <li>EFFECTIVE PASTORING</li>
+                  <li>COMMUNICATION TODAY</li>
+                </ul>
+              </li>
+              <li><strong>5. Study of Corinthians (SCR)</strong> ▪ An in-depth study of 1st Corinthians</li>
+              <li><strong>6. Christian Leadership (CHL2)</strong>
+                <ul>
+                  <li>LEADERSHIP PROFILE</li>
+                  <li>EXCELLENCE OF MINISTRY</li>
+                  <li>SCHOOL OF OBEDIENCE</li>
+                  <li>CHRIST-LIKE LEADERSHIP</li>
+                </ul>
+              </li>
+              <li><strong>7. Gospel of John 2 (GJH2)</strong> ▪ A verse by verse study of the second half of John's Gospel</li>
+            </ol>
+          </div>
+        </details>
+      </li>
+      <li><em>Level 3 Diploma in Theology (Coming Soon)</em></li>
+      <li><em>Level 3 Diploma in Biblical Studies (Coming Soon)</em></li>
+      <li><em>Level 3 Diploma in Business Leadership (Coming Soon)</em></li>
     </ul>
-    
+
+    <!-- Level 4 Programs -->
     <h2>Level 4 Programs</h2>
-    <ul>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 4 Higher Diploma in Shepherding</a></li>
+    <ul class="program-list">
+      <li>
+        <details>
+          <summary><strong>Level 4 Higher Diploma in Shepherding</strong></summary>
+          <div class="module-content">
+            <p><em>Program curriculum coming soon. Focus: Advanced pastoral care, counseling, and church leadership.</em></p>
+          </div>
+        </details>
+      </li>
     </ul>
-    
+
+    <!-- Level 5 Programs -->
     <h2>Level 5 Programs</h2>
-    <ul>
-      <li><a href="<%= pdfPath %>" target="_blank">Level 5 Bachelor of Ministry</a></li>
+    <ul class="program-list">
+      <li>
+        <details>
+          <summary><strong>Level 5 Bachelor of Ministry</strong></summary>
+          <div class="module-content">
+            <p><em>Program curriculum coming soon. Capstone degree integrating theology, leadership, and practical ministry.</em></p>
+          </div>
+        </details>
+      </li>
     </ul>
-    
+
   </main>
   <%- include('partials/footer') %>
 </body>
+
+<style>
+  .program-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .program-list li {
+    margin-bottom: 1rem;
+  }
+  details {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    background: #f9f9f9;
+    margin-bottom: 0.5rem;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  summary:hover {
+    color: #1a73e8;
+  }
+  .module-content {
+    margin-top: 1rem;
+    padding-left: 1rem;
+    border-left: 3px solid #1a73e8;
+    font-size: 0.95rem;
+  }
+  .module-content ol {
+    padding-left: 1.5rem;
+  }
+  .module-content ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+  em {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+</style>
 </html>
