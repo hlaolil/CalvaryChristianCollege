@@ -67,16 +67,16 @@ exports.postRegister = async (req, res) => {
         roles: validRoles
       });
     }
-    // Validate student role with student number
-    if (role === 'student') {
-      if (!studentNumber || !/^[A-Z0-9]{8,12}$/.test(studentNumber)) {
-        return res.render('register', {
-          error: 'Invalid student number (must be 8-12 alphanumeric characters)',
-          title: 'Register',
-          roles: validRoles
-        });
-      }
-    }
+    // Validate student role with student number
+    if (role === 'student') {
+      if (!studentNumber || !/^[A-Z0-9]{6}$/.test(studentNumber)) {
+        return res.render('register', {
+          error: 'Invalid student number (must be exactly 6 alphanumeric characters)',
+          title: 'Register',
+          roles: validRoles
+        });
+      }
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const userData = {
       name,
