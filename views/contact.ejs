@@ -20,6 +20,41 @@
         <button type="submit">Send Message</button>
       </form>
     </div>
+    <% if (user?.role === 'admin') { %>
+      <hr>
+      <h2>All Registered Users</h2>
+
+      <% if (users && users.length > 0) { %>
+        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse; margin-top:1rem; font-size:0.95rem;">
+          <thead style="background:#e3f2fd;">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach((u, i) => { %>
+              <tr>
+                <td><%= i + 1 %></td>
+                <td><%= u.name || '—' %></td>
+                <td><%= u.email %></td>
+                <td>
+                  <span style="padding:2px 8px; border-radius:4px; font-weight:bold; color:white; background:<%= u.role === 'admin' ? '#d32f2f' : '#1976d2' %>">
+                    <%= (u.role || 'user').toUpperCase() %>
+                  </span>
+                </td>
+                <td><%= u.createdAt ? new Date(u.createdAt).toLocaleString() : '—' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p><em>No users found.</em></p>
+      <% } %>
+    <% } %>
   </main>
   <%- include('partials/footer') %>
 </body>
