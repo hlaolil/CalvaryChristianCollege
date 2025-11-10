@@ -160,8 +160,9 @@ exports.postRegister = async (req, res) => {
       name: userData.name,
       email: userData.email,
       role: userData.role,
-      phoneNumber: userData.phoneNumber
-    };
+      phoneNumber: userData.phoneNumber,
+      studentNumber: userData.studentNumber || null,        // ← NEW
+      programOfStudy: userData.programOfStudy || null      // ← NEW
 
     res.redirect('/');
 
