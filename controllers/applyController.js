@@ -1,9 +1,28 @@
+// controllers/applyController.js
 const db = require('../db/connect');
 
 // GET /apply
-exports.getApply = (req, res) => {
-  res.render('apply', { 
+exports.getApply = async (req, res) => {
+  let applications = [];
+
+  // Only admins see all applications
+  if (req.session.user?.role === 'admin') {
+    try {
+      const cursor = db.getDb()
+        .collection('applications')
+        .find()
+        .sort({ submittedAt: -1 });
+
+      applications = await cursor.toArray(); // ← fast, plain objects
+    } catch (err) {
+      console.error('Failed to load applications:', err);
+    }
+  }
+
+  res.render('apply', {
     title: 'Application Form',
+    user: req.session.user,
+    applications,           // ← only for admin
     error: null,
     success: req.query.success === 'true'
   });
@@ -24,16 +43,20 @@ exports.postApply = async (req, res) => {
       'national_leader_position', 'national_leader_address', 'program', 'semester'
     ];
 
-    const missingFields = requiredFields.filter(field => !req.body[field] || req.body[field].trim() === '');
+    const missingFields = requiredFields.filter(
+      field => !req.body[field] || req.body[field].trim() === ''
+    );
+
     if (missingFields.length > 0) {
-      return res.render('apply', { 
+      return res.render('apply', {
         title: 'Application Form',
-        error: `Missing or empty required fields: ${missingFields.join(', ')}.`,
+        user: req.session.user,
+        error: `Missing required fields: ${missingFields.join(', ')}.`,
         success: false
       });
     }
 
-    // Prepare data, ensuring optionals are set
+    // Prepare data
     const applicationData = {
       userId: user.id,
       name: user.name,
@@ -48,26 +71,12 @@ exports.postApply = async (req, res) => {
 
     res.redirect('/apply?success=true');
   } catch (err) {
-    console.error(err);
-    res.render('apply', { 
+    console.error('Application save error:', err);
+    res.render('apply', {
       title: 'Application Form',
+      user: req.session.user,
       error: 'Server error. Please try again.',
       success: false
     });
   }
 };
-
-router.get('/', ensureAuthenticated, async (req, res) => {
-  let applications = [];
-  if (req.user.role === 'admin') {
-    applications = await Application.find().sort({ submittedAt: -1 });
-  }
-
-  res.render('apply', {
-    user: req.user,
-    applications,           // ← only passed for admins
-    success: req.flash('success'),
-    error: req.flash('error'),
-    csrfToken: req.csrfToken?.()
-  });
-});
