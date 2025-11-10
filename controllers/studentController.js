@@ -8,21 +8,28 @@ exports.getStudentPortal = async (req, res) => {
   let allStudents = [];
 
   try {
-    // === 1. Get current student's application (if any) ===
+    // === 1. Get current student's application ===
     if (user.role === 'student' || user.role === 'admin') {
       studentApp = await db.getDb()
         .collection('applications')
         .findOne({ userId: ObjectId(user.id) });
     }
 
-    // === 2. Admin: Get ALL students (users with role 'student') ===
+    // === 2. Admin: Get ALL students ===
     if (user.role === 'admin') {
+      // First, ensure createdAt exists (run once, or auto-add)
+      await db.getDb().collection('users').updateMany(
+        { createdAt: { $exists: false } },
+        { $set: { createdAt: new Date() } }
+      );
+
       const cursor = db.getDb()
         .collection('users')
-        .find({ role: 'student' })
-        .sort({ createdAt: -1 });
+        .find({ role: 'student' })  // Exact match
+        .sort({ createdAt: -1 });   // Falls back if missing
 
       const students = await cursor.toArray();
+      console.log(`DEBUG: Found ${students.length} students with role 'student'`);  // ← Check server logs
 
       // Enrich with application data
       allStudents = await Promise.all(
@@ -36,6 +43,7 @@ exports.getStudentPortal = async (req, res) => {
           };
         })
       );
+      console.log(`DEBUG: Enriched students:`, allStudents.map(s => ({ name: s.name, role: s.role })));  // ← Logs names
     }
 
     res.render('student-portal', {
