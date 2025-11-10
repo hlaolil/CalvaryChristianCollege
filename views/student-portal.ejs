@@ -52,11 +52,12 @@
           <thead style="background:#e8f5e9;">
             <tr>
               <th>#</th>
-              <th>Student Number</th>
+              <th>Student #</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Program</th>
-              <th>Status</th>
+              <th>Phone</th>           <!-- NEW -->
+              <th>Program</th>         <!-- NEW -->
+              <th>App Status</th>
               <th>Submitted</th>
             </tr>
           </thead>
@@ -67,7 +68,8 @@
                 <td><code><%= s.studentNumber || '—' %></code></td>
                 <td><%= s.name %></td>
                 <td><%= s.email %></td>
-                <td><%= s.application.program %></td>
+                <td><%= s.phoneNumber || '—' %></td>                 <!-- SHOW PHONE -->
+                <td><%= s.programOfStudy || '—' %></td>              <!-- SHOW PROGRAM -->
                 <td>
                   <span style="color: <%= s.application.status === 'Approved' ? 'green' : s.application.status === 'Rejected' ? 'red' : 'orange' %>">
                     <%= s.application.status || 'Pending' %>
