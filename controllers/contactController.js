@@ -1,34 +1,43 @@
 // controllers/contactController.js
 const db = require('../db/connect');
 
-// GET /contact – show form + admin: all users
+// GET /contact – show form + admin: users + contacts
 exports.getContact = async (req, res) => {
   let users = [];
+  let contacts = [];
 
-  // Only admins see all users
+  // Only admins see data
   if (req.session.user?.role === 'admin') {
     try {
-      const cursor = db.getDb()
+      // === ALL USERS ===
+      const userCursor = db.getDb()
         .collection('users')
         .find()
         .sort({ createdAt: -1 });
+      users = await userCursor.toArray();
 
-      users = await cursor.toArray(); // plain JS objects
+      // === ALL CONTACT MESSAGES ===
+      const contactCursor = db.getDb()
+        .collection('contacts')
+        .find()
+        .sort({ date: -1 });
+      contacts = await contactCursor.toArray();
     } catch (err) {
-      console.error('Failed to load users:', err);
+      console.error('Failed to load admin data:', err);
     }
   }
 
   res.render('contact', {
     title: 'Contact Us',
     user: req.session.user,
-    users,                  // ← only for admin
+    users,        // ← all users
+    contacts,     // ← all contact form submissions
     success: req.query.success === 'true',
     error: null
   });
 };
 
-// POST /contact – unchanged logic, just renamed to sendContact
+// POST /contact – unchanged (your current logic)
 exports.sendContact = async (req, res) => {
   const { name, email, message, phone } = req.body;
 
@@ -44,7 +53,6 @@ exports.sendContact = async (req, res) => {
   try {
     console.log('Contact form submitted:', req.body);
 
-    // Save to DB
     await db.getDb().collection('contacts').insertOne({
       name: name.trim(),
       email: email.trim(),
