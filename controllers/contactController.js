@@ -1,48 +1,65 @@
-const db = require('../db/connect'); // Optional; for logging to DB
+// controllers/contactController.js
+const db = require('../db/connect');
 
-// GET /contact (unchanged)
-exports.getContact = (req, res) => {
-  res.render('contact', { 
+// GET /contact – show form + admin: all users
+exports.getContact = async (req, res) => {
+  let users = [];
+
+  // Only admins see all users
+  if (req.session.user?.role === 'admin') {
+    try {
+      const cursor = db.getDb()
+        .collection('users')
+        .find()
+        .sort({ createdAt: -1 });
+
+      users = await cursor.toArray(); // plain JS objects
+    } catch (err) {
+      console.error('Failed to load users:', err);
+    }
+  }
+
+  res.render('contact', {
     title: 'Contact Us',
+    user: req.session.user,
+    users,                  // ← only for admin
     success: req.query.success === 'true',
     error: null
   });
 };
 
-// POST /contact
+// POST /contact – unchanged logic, just renamed to sendContact
 exports.sendContact = async (req, res) => {
-  const { name, email, message, phone } = req.body;  // Includes optional phone
+  const { name, email, message, phone } = req.body;
 
-  // Basic validation (phone is optional)
-  if (!name || !email || !message) {
-    return res.render('contact', { 
+  if (!name?.trim() || !email?.trim() || !message?.trim()) {
+    return res.render('contact', {
       title: 'Contact Us',
+      user: req.session.user,
       success: false,
       error: 'All fields (name, email, message) are required.'
     });
   }
 
   try {
-    // Log submission (for debugging)
     console.log('Contact form submitted:', req.body);
 
-    // Optional: Save to DB
-    if (db) {
-      await db.getDb().collection('contacts').insertOne({ 
-        name, 
-        email, 
-        phone,  // Include even if empty
-        message, 
-        date: new Date() 
-      });
-      console.log('Contact saved to DB');
-    }
+    // Save to DB
+    await db.getDb().collection('contacts').insertOne({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone?.trim() || '',
+      message: message.trim(),
+      date: new Date()
+    });
 
+    console.log('Contact saved to DB');
     res.redirect('/contact?success=true');
   } catch (error) {
     console.error('Error in contact form submission:', error);
-    res.render('contact', { 
+    res.render('contact', {
       title: 'Contact Us',
+      user: req.session.user,
       success: false,
       error: 'An error occurred while submitting your message. Please try again later.'
     });
