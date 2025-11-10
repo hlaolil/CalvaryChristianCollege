@@ -38,6 +38,8 @@ connectDB().then(() => {
   app.use('/academics', require('./routes/academics')); // Protected: Academics dashboard/list/add
   app.use('/contact', require('./routes/contactRoutes'));// Contact page
   app.use('/auth', require('./routes/authRoutes')); // Login, Register, Logout
+  // After your other routes
+  app.use('/student-portal', require('./routes/studentRoutes'));
   // 404 handler
   app.use((req, res) => {
     res.status(404).render('404', { title: 'Page Not Found' });
