@@ -163,7 +163,7 @@ exports.postRegister = async (req, res) => {
       phoneNumber: userData.phoneNumber,
       studentNumber: userData.studentNumber || null,        // ← NEW
       programOfStudy: userData.programOfStudy || null      // ← NEW
-
+    }
     res.redirect('/');
 
   } catch (err) {
