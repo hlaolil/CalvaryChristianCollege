@@ -56,3 +56,18 @@ exports.postApply = async (req, res) => {
     });
   }
 };
+
+router.get('/', ensureAuthenticated, async (req, res) => {
+  let applications = [];
+  if (req.user.role === 'admin') {
+    applications = await Application.find().sort({ submittedAt: -1 });
+  }
+
+  res.render('apply', {
+    user: req.user,
+    applications,           // ← only passed for admins
+    success: req.flash('success'),
+    error: req.flash('error'),
+    csrfToken: req.csrfToken?.()
+  });
+});
