@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: title }) %>
+<body>
+  <%- include('partials/header') %>
+  <main class="container">
+    <h1>Student Portal</h1>
+
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <!-- ==================== CURRENT STUDENT PROFILE ==================== -->
+    <div class="card" style="padding:1.5rem; margin:1.5rem 0; border:1px solid #ddd; border-radius:8px; background:#f9f9f9;">
+      <h2>Welcome, <%= user.name %>!</h2>
+      <p><strong>Student Number:</strong> <code style="font-size:1.1em;"><%= user.studentNumber || '—' %></code></p>
+      <p><strong>Email:</strong> <%= user.email %></p>
+      <p><strong>Role:</strong> <span class="badge" style="background:#1976d2; color:white; padding:3px 8px; border-radius:4px;"><%= user.role.toUpperCase() %></span></p>
+      <p><strong>Joined:</strong> <%= user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—' %></p>
+
+      <% if (studentApp) { %>
+        <hr>
+        <h3>Application Status</h3>
+        <p><strong>Program:</strong> <%= studentApp.program %></p>
+        <p><strong>Semester:</strong> <%= studentApp.semester %></p>
+        <p><strong>Status:</strong>
+          <span style="color: <%= studentApp.status === 'Approved' ? 'green' : studentApp.status === 'Rejected' ? 'red' : 'orange' %>; font-weight:bold;">
+            <%= studentApp.status || 'Pending' %>
+          </span>
+        </p>
+        <p><strong>Submitted:</strong> <%= new Date(studentApp.submittedAt).toLocaleString() %></p>
+
+        <% if (studentApp.status === 'Approved') { %>
+          <p class="success">You are officially enrolled!</p>
+        <% } else if (studentApp.status === 'Rejected') { %>
+          <p class="error">Application declined. Contact admin.</p>
+        <% } else { %>
+          <p class="info">Application under review.</p>
+        <% } %>
+      <% } else if (user.role === 'student') { %>
+        <p class="warning">No application found. <a href="/apply">Apply Now</a></p>
+      <% } %>
+    </div>
+
+    <!-- ==================== ADMIN: ALL STUDENTS ==================== -->
+    <% if (user.role === 'admin') { %>
+      <hr>
+      <h2>All Students</h2>
+
+      <% if (allStudents.length > 0) { %>
+        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.95rem;">
+          <thead style="background:#e8f5e9;">
+            <tr>
+              <th>#</th>
+              <th>Student Number</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Program</th>
+              <th>Status</th>
+              <th>Submitted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% allStudents.forEach((s, i) => { %>
+              <tr>
+                <td><%= i + 1 %></td>
+                <td><code><%= s.studentNumber || '—' %></code></td>
+                <td><%= s.name %></td>
+                <td><%= s.email %></td>
+                <td><%= s.application.program %></td>
+                <td>
+                  <span style="color: <%= s.application.status === 'Approved' ? 'green' : s.application.status === 'Rejected' ? 'red' : 'orange' %>">
+                    <%= s.application.status || 'Pending' %>
+                  </span>
+                </td>
+                <td><%= s.application.submittedAt ? new Date(s.application.submittedAt).toLocaleDateString() : '—' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p><em>No students registered yet.</em></p>
+      <% } %>
+    <% } %>
+
+    <p><a href="/">Back to Home</a></p>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>
