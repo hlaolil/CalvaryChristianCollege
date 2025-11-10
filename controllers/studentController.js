@@ -1,6 +1,6 @@
 // controllers/studentController.js
 const db = require('../db/connect');
-const ObjectId = require('mongodb').ObjectId;
+const { ObjectId } = require('mongodb'); // ← CORRECT WAY
 
 exports.getStudentPortal = async (req, res) => {
   const user = req.session.user;
@@ -12,12 +12,12 @@ exports.getStudentPortal = async (req, res) => {
     if (user.role === 'student' || user.role === 'admin') {
       studentApp = await db.getDb()
         .collection('applications')
-        .findOne({ userId: ObjectId(user.id) });
+        .findOne({ userId: new ObjectId(user.id) }); // ← FIXED
     }
 
     // === 2. Admin: Get ALL students ===
     if (user.role === 'admin') {
-      // First, ensure createdAt exists (run once, or auto-add)
+      // Ensure createdAt exists
       await db.getDb().collection('users').updateMany(
         { createdAt: { $exists: false } },
         { $set: { createdAt: new Date() } }
@@ -25,25 +25,23 @@ exports.getStudentPortal = async (req, res) => {
 
       const cursor = db.getDb()
         .collection('users')
-        .find({ role: 'student' })  // Exact match
-        .sort({ createdAt: -1 });   // Falls back if missing
+        .find({ role: 'student' })
+        .sort({ createdAt: -1 });
 
       const students = await cursor.toArray();
-      console.log(`DEBUG: Found ${students.length} students with role 'student'`);  // ← Check server logs
+      console.log(`DEBUG: Found ${students.length} students`);
 
-      // Enrich with application data
       allStudents = await Promise.all(
         students.map(async (s) => {
           const app = await db.getDb()
             .collection('applications')
-            .findOne({ userId: ObjectId(s._id) });
+            .findOne({ userId: new ObjectId(s._id) }); // ← FIXED
           return {
             ...s,
             application: app || { status: 'No Application', program: '—', semester: '—' }
           };
         })
       );
-      console.log(`DEBUG: Enriched students:`, allStudents.map(s => ({ name: s.name, role: s.role })));  // ← Logs names
     }
 
     res.render('student-portal', {
