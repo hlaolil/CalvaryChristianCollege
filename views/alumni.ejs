@@ -107,6 +107,49 @@
     <% } else { %>
       <p>You must be logged in to apply. <a href="/auth/login">Login here</a></p>
     <% } %>
+    <% if (user.role === 'admin') { %>
+      <hr>
+      <h2>All Alumni Submissions</h2>
+
+      <% if (alumni && alumni.length > 0) { %>
+        <% alumni.forEach((a, i) => { %>
+          <details style="margin:1.5rem 0; padding:1rem; border:1px solid #ddd; border-radius:8px;">
+            <summary style="font-weight:bold; cursor:pointer;">
+              #<%= i + 1 %> – <%= a.name %> (<%= a.email %>)
+              <small style="color:#666; margin-left:1rem;">
+                Grad Year: <%= a.grad_year %> – <%= new Date(a.submittedAt).toLocaleDateString() %>
+              </small>
+            </summary>
+
+            <div style="margin-top:1rem; line-height:1.7;">
+              <strong>Personal</strong><br>
+              Phone: <%= a.phone %> | DOB: <%= new Date(a.dob).toLocaleDateString() %><br>
+              Address: <%= a.street_address %>, <%= a.town %>, <%= a.district %> <%= a.postal_code %><br><br>
+
+              <strong>Church</strong><br>
+              Church: <%= a.current_church_name %>, <%= a.current_church_city %>, <%= a.current_church_country %><br>
+              Pastor: <%= a.pastor_name %> | Member: <%= a.church_member %><br>
+              Denomination: <%= a.church_denomination %><br>
+              Credentials: <%= a.ministerial_credentials %><br>
+
+              <strong>Ministry</strong><br>
+              <pre style="background:#f9f9f9; padding:0.8rem; border-radius:4px;"><%= a.ministry_positions %></pre>
+
+              <strong>National Leader</strong><br>
+              <%= a.national_leader_name %> (<%= a.national_leader_position %>)<br>
+              <pre style="background:#f9f9f9; padding:0.8rem; border-radius:4px;"><%= a.national_leader_address %></pre>
+
+              <% if (a.message) { %>
+                <strong>Message</strong><br>
+                <pre style="background:#f9f9f9; padding:0.8rem; border-radius:4px;"><%= a.message %></pre>
+              <% } %>
+            </div>
+          </details>
+        <% }) %>
+      <% } else { %>
+        <p><em>No alumni submissions yet.</em></p>
+      <% } %>
+    <% } %>
   </main>
   <%- include('partials/footer') %>
 </body>
