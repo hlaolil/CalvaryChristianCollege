@@ -1,6 +1,6 @@
 // controllers/studentController.js
 const db = require('../db/connect');
-const { ObjectId } = require('mongodb'); // ← CORRECT WAY
+const { ObjectId } = require('mongodb');
 
 exports.getStudentPortal = async (req, res) => {
   const user = req.session.user;
@@ -8,14 +8,14 @@ exports.getStudentPortal = async (req, res) => {
   let allStudents = [];
 
   try {
-    // === 1. Get current student's application ===
+    // === 1. Current student's application ===
     if (user.role === 'student' || user.role === 'admin') {
       studentApp = await db.getDb()
         .collection('applications')
-        .findOne({ userId: new ObjectId(user.id) }); // ← FIXED
+        .findOne({ userId: new ObjectId(user.id) });
     }
 
-    // === 2. Admin: Get ALL students ===
+    // === 2. Admin: Get ALL students with phone & program ===
     if (user.role === 'admin') {
       // Ensure createdAt exists
       await db.getDb().collection('users').updateMany(
@@ -26,16 +26,24 @@ exports.getStudentPortal = async (req, res) => {
       const cursor = db.getDb()
         .collection('users')
         .find({ role: 'student' })
+        .project({
+          name: 1,
+          email: 1,
+          studentNumber: 1,
+          phoneNumber: 1,           // ← ADD THIS
+          programOfStudy: 1,        // ← ADD THIS
+          createdAt: 1
+        })
         .sort({ createdAt: -1 });
 
       const students = await cursor.toArray();
-      console.log(`DEBUG: Found ${students.length} students`);
+      console.log(`DEBUG: Found ${students.length} students with phone & program`);
 
       allStudents = await Promise.all(
         students.map(async (s) => {
           const app = await db.getDb()
             .collection('applications')
-            .findOne({ userId: new ObjectId(s._id) }); // ← FIXED
+            .findOne({ userId: new ObjectId(s._id) });
           return {
             ...s,
             application: app || { status: 'No Application', program: '—', semester: '—' }
