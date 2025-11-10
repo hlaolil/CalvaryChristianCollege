@@ -14,7 +14,7 @@
     <% } %>
 
     <!-- ==================== CONTACT FORM ==================== -->
-    <form action="/contact" method="POST">
+    <form class="contact-form" action="/contact" method="POST">
       <label>Name *:</label>
       <input type="text" name="name" required value="<%= user?.name || '' %>" <%= user ? 'readonly' : '' %>><br>
 
