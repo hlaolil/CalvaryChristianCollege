@@ -3,29 +3,43 @@
 <%- include('partials/head', { title: title }) %>
 <body>
   <%- include('partials/header') %>
-  <main>
-    <div class="contact-container">
-      <h1>Contact Us</h1>
-      <% if (success) { %><p class="success">Message sent successfully!</p><% } %>
-      <% if (error) { %><p class="error"><%= error %></p><% } %>
-      <form action="/contact" method="POST" class="contact-form">
-        <label>Name:</label>
-        <input type="text" name="name" placeholder="Your name" required><br>
-        <label>Email:</label>
-        <input type="email" name="email" placeholder="Your email" required><br>
-        <label>Phone (Optional):</label>
-        <input type="tel" name="phone" placeholder="Your phone number"><br>
-        <label>Message:</label>
-        <textarea name="message" placeholder="Your message" rows="5" required></textarea><br>
-        <button type="submit">Send Message</button>
-      </form>
-    </div>
+  <main class="container">
+    <h1>Contact Us</h1>
+
+    <% if (success) { %>
+      <p class="success">Thank you! Your message has been sent.</p>
+    <% } %>
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <!-- ==================== CONTACT FORM ==================== -->
+    <form action="/contact" method="POST">
+      <label>Name *:</label>
+      <input type="text" name="name" required value="<%= user?.name || '' %>" <%= user ? 'readonly' : '' %>><br>
+
+      <label>Email *:</label>
+      <input type="email" name="email" required value="<%= user?.email || '' %>" <%= user ? 'readonly' : '' %>><br>
+
+      <label>Phone (Optional):</label>
+      <input type="tel" name="phone" placeholder="+266..."><br>
+
+      <label>Message *:</label>
+      <textarea name="message" rows="6" required placeholder="How can we help you?"></textarea><br>
+
+      <button type="submit">Send Message</button>
+    </form>
+
+    <p><a href="/">Back to Home</a></p>
+
+    <!-- ==================== ADMIN: USERS + CONTACTS ==================== -->
     <% if (user?.role === 'admin') { %>
+
+      <!-- === ALL USERS === -->
       <hr>
       <h2>All Registered Users</h2>
-
       <% if (users && users.length > 0) { %>
-        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse; margin-top:1rem; font-size:0.95rem;">
+        <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.95rem;">
           <thead style="background:#e3f2fd;">
             <tr>
               <th>#</th>
@@ -42,7 +56,7 @@
                 <td><%= u.name || '—' %></td>
                 <td><%= u.email %></td>
                 <td>
-                  <span style="padding:2px 8px; border-radius:4px; font-weight:bold; color:white; background:<%= u.role === 'admin' ? '#d32f2f' : '#1976d2' %>">
+                  <span style="padding:3px 8px; border-radius:4px; font-weight:bold; color:white; background:<%= u.role === 'admin' ? '#d32f2f' : '#1976d2' %>">
                     <%= (u.role || 'user').toUpperCase() %>
                   </span>
                 </td>
@@ -54,13 +68,12 @@
       <% } else { %>
         <p><em>No users found.</em></p>
       <% } %>
-    <% } %>
 
-    <hr>
+      <!-- === ALL CONTACT MESSAGES === -->
+      <hr>
       <h2>All Contact Form Submissions</h2>
-
       <% if (contacts && contacts.length > 0) { %>
-        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:0.95rem;">
+        <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.95rem;">
           <thead style="background:#fff3e0;">
             <tr>
               <th>#</th>
@@ -87,7 +100,9 @@
       <% } else { %>
         <p><em>No contact messages yet.</em></p>
       <% } %>
+
     <% } %>
+
   </main>
   <%- include('partials/footer') %>
 </body>
