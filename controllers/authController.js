@@ -56,12 +56,12 @@ exports.postRegister = async (req, res) => {
 
   const validRoles = ['applicant', 'student', 'alumni', 'admin'];
   const validPrograms = [
-    'Computer Science',
-    'Information Technology',
-    'Business Information Systems',
-    'Software Engineering',
-    'Data Science'
-  ];
+  "Level 1 Certificate in Christian Discipleship",
+  "Level 2 Diploma in Christian Leadership",
+  "Level 3 Advanced Diploma in Ministry",
+  "Level 4 Higher Diploma in Shepherding",
+  "Level 5 Bachelor of Ministry"
+];
 
   try {
     // === 1. Required Fields for ALL users ===
