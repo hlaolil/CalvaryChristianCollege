@@ -55,6 +55,39 @@
         <p><em>No users found.</em></p>
       <% } %>
     <% } %>
+
+    <hr>
+      <h2>All Contact Form Submissions</h2>
+
+      <% if (contacts && contacts.length > 0) { %>
+        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:0.95rem;">
+          <thead style="background:#fff3e0;">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Message</th>
+              <th>Submitted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% contacts.forEach((c, i) => { %>
+              <tr>
+                <td><%= i + 1 %></td>
+                <td><%= c.name %></td>
+                <td><%= c.email %></td>
+                <td><%= c.phone || '—' %></td>
+                <td style="max-width:400px; word-wrap:break-word;"><%= c.message %></td>
+                <td><%= new Date(c.date).toLocaleString() %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p><em>No contact messages yet.</em></p>
+      <% } %>
+    <% } %>
   </main>
   <%- include('partials/footer') %>
 </body>
