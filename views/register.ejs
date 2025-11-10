@@ -5,43 +5,128 @@
   <%- include('partials/header') %>
   <main>
     <h1>Register</h1>
+
     <% if (user) { %>
-      <p>You're already logged in as <%= user.name %>. <a href="/academics">Go to Dashboard</a> | <a href="/auth/logout">Logout</a></p>
+      <p>You're already logged in as <%= user.name %>. 
+        <a href="/academics">Go to Dashboard</a> | 
+        <a href="/auth/logout">Logout</a>
+      </p>
     <% } else { %>
+
       <% if (error) { %><p class="error"><%= error %></p><% } %>
-      <form action="/auth/register" method="POST">
+
+      <form action="/auth/register" method="POST" novalidate>
+        <!-- ==== COMMON FIELDS ==== -->
         <label>Name:</label>
-        <input type="text" name="name" required><br>
+        <input type="text" name="name" required autocomplete="name"><br>
+
         <label>Email:</label>
-        <input type="email" name="email" required><br>
+        <input type="email" name="email" required autocomplete="email"><br>
+
+        <label>Phone Number:</label>
+        <input type="tel" name="phoneNumber" placeholder="+266 1234 5678"
+               required autocomplete="tel"><br>
+
         <label>Password:</label>
-        <input type="password" name="password" required><br>
+        <input type="password" name="password" required autocomplete="new-password"><br>
+
         <label>Role:</label>
         <select name="role" id="role" required>
-          <% roles.forEach(role => { %>
-            <option value="<%= role %>"><%= role.charAt(0).toUpperCase() + role.slice(1) %></option>
+          <% roles.forEach(r => { %>
+            <option value="<%= r %>"><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
           <% }) %>
         </select><br>
-        <div id="admin-secret" style="display: none;">
+
+        <!-- ==== ADMIN ONLY ==== -->
+        <div id="admin-secret" class="conditional" style="display:none;">
           <label>Admin Secret Key:</label>
-          <input type="text" name="adminSecret"><br>
+          <input type="text" name="adminSecret" autocomplete="off"><br>
         </div>
-        <div id="student-number" style="display: none;">
+
+        <!-- ==== STUDENT ONLY ==== -->
+        <div id="student-fields" class="conditional" style="display:none;">
           <label>Student Number:</label>
-          <input type="text" name="studentNumber"><br>
+          <input type="text" name="studentNumber" maxlength="6" required><br>
+
+          <label>Program of Study:</label>
+          <select name="programOfStudy" required>
+            <option value="">-- Select Program --</option>
+
+            <!-- LEVEL 1 -->
+            <optgroup label="Level 1 Programs">
+              <option value="Level 1 Certificate in Christian Discipleship">
+                Level 1 Certificate in Christian Discipleship
+              </option>
+            </optgroup>
+
+            <!-- LEVEL 2 -->
+            <optgroup label="Level 2 Programs">
+              <option value="Level 2 Diploma in Christian Leadership">
+                Level 2 Diploma in Christian Leadership
+              </option>
+              <option value="Level 2 Certificate in Theology" disabled>
+                Level 2 Certificate in Theology (Coming Soon)
+              </option>
+              <option value="Level 2 Certificate in Biblical Studies" disabled>
+                Level 2 Certificate in Biblical Studies (Coming Soon)
+              </option>
+            </optgroup>
+
+            <!-- LEVEL 3 -->
+            <optgroup label="Level 3 Programs">
+              <option value="Level 3 Advanced Diploma in Ministry">
+                Level 3 Advanced Diploma in Ministry
+              </option>
+              <option value="Level 3 Diploma in Theology" disabled>
+                Level 3 Diploma in Theology (Coming Soon)
+              </option>
+              <option value="Level 3 Diploma in Biblical Studies" disabled>
+                Level 3 Diploma in Biblical Studies (Coming Soon)
+              </option>
+              <option value="Level 3 Diploma in Business Leadership" disabled>
+                Level 3 Diploma in Business Leadership (Coming Soon)
+              </option>
+            </optgroup>
+
+            <!-- LEVEL 4 -->
+            <optgroup label="Level 4 Programs">
+              <option value="Level 4 Higher Diploma in Shepherding">
+                Level 4 Higher Diploma in Shepherding
+              </option>
+            </optgroup>
+
+            <!-- LEVEL 5 -->
+            <optgroup label="Level 5 Programs">
+              <option value="Level 5 Bachelor of Ministry">
+                Level 5 Bachelor of Ministry
+              </option>
+            </optgroup>
+          </select><br>
         </div>
+
         <button type="submit">Register</button>
       </form>
+
       <p>Already have an account? <a href="/auth/login">Login here</a></p>
     <% } %>
   </main>
+
   <%- include('partials/footer') %>
+
   <script>
-    document.getElementById('role').addEventListener('change', function() {
-      const role = this.value;
-      document.getElementById('admin-secret').style.display = role === 'admin' ? 'block' : 'none';
-      document.getElementById('student-number').style.display = role === 'student' ? 'block' : 'none';
-    });
+    const roleSelect      = document.getElementById('role');
+    const adminSecretDiv  = document.getElementById('admin-secret');
+    const studentDiv      = document.getElementById('student-fields');
+
+    function toggleFields() {
+      const role = roleSelect.value;
+      adminSecretDiv.style.display  = (role === 'admin')   ? 'block' : 'none';
+      studentDiv.style.display      = (role === 'student') ? 'block' : 'none';
+    }
+
+    // Run on change and on initial load (in case the page is re-rendered with a value)
+    roleSelect.addEventListener('change', toggleFields);
+    toggleFields();
   </script>
 </body>
 </html>
