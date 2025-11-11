@@ -1,14 +1,22 @@
 const express = require('express');
 const router = express.Router();
 
-// GET / (home)
-router.get('/', (req, res) => {
-  res.render('index', { title: 'Home' });
+// Home
+app.get('/', (req, res) => {
+  res.render('index', { 
+    title: 'Home', 
+    user: req.user,
+    path: req.path  // <-- ADD THIS
+  });
 });
 
-// GET /about (stub for missing route)
-router.get('/about', (req, res) => {
-  res.render('about', { title: 'About Us' });
+// About
+app.get('/about', (req, res) => {
+  res.render('about', { 
+    title: 'About Us', 
+    user: req.user,
+    path: req.path  // <-- ADD THIS
+  });
 });
 
 module.exports = router;
