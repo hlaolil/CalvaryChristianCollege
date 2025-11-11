@@ -1,5 +1,5 @@
 // HomeController.js
-
+const db = require('../db/connect');
 exports.getHome = (req, res) => {
   const user = req.session?.user || null;  // ← ADD THIS
 
