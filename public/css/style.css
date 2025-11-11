@@ -1,4 +1,6 @@
-/* Base Styles */
+/* ========================================
+   Base Styles
+   ======================================== */
 body {
   font-family: Arial, sans-serif;
   background: #f6f6f6;
@@ -28,7 +30,7 @@ header {
 }
 
 .fancy-title {
-  font-family: serif; /* Or 'Georgia' for classic look */
+  font-family: serif;
   margin: 0;
   line-height: 1.2;
 }
@@ -71,7 +73,7 @@ nav a:hover {
   text-decoration: underline;
 }
 
-/* User Nav (Ensures logout link is white) */
+/* User Nav */
 .user-nav {
   display: flex;
   align-items: center;
@@ -94,54 +96,73 @@ main {
   margin: auto;
 }
 
-/* Hero Section */
+/* ========================================
+   HERO SECTION – FULLY FIXED
+   ======================================== */
 .hero {
-  background: url('/images/hero-bg.jpg') no-repeat center center/cover;
-  height: 200px;
   position: relative;
+  background: url('/images/hero-bg.jpg') no-repeat center center/cover;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  padding: 6rem 2rem;
   text-align: center;
+  color: #fff;
   border-radius: 10px;
   margin-bottom: 2rem;
+  overflow: hidden;
 }
 
-.hero-overlay {
-  background: rgba(0, 0, 0, 0.5);
+/* Dark overlay using ::before (cleaner than div) */
+.hero::before {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
 }
 
 .hero-content {
-  z-index: 1;
-  text-align: center;
-  max-width: 100%;
-  margin-bottom: 50px;
-}
-.hero-content a{
-  margin-top: 180px;
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  padding: 2rem;
+  animation: fadeInUp 1s ease-out;
 }
 
 .hero h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: 1rem;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 .hero p {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   margin-bottom: 2rem;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
-/* Buttons */
+.hero .btn-primary {
+  margin-top: 1rem;
+  padding: 0.9rem 2rem;
+  font-size: 1.1rem;
+}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
 .btn-primary {
   display: inline-block;
   background: #2d4a72;
@@ -159,7 +180,50 @@ main {
   background: #1d3250;
 }
 
-/* Intro & Highlights */
+/* ========================================
+   Grid Section (Vision, Mission, etc.)
+   ======================================== */
+.grid-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 3rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.grid-item {
+  text-align: center;
+}
+
+.grid-item img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+/* ========================================
+   CTA Section
+   ======================================== */
+.cta {
+  text-align: center;
+  background: #2d4a72;
+  color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  margin: 3rem 2rem;
+}
+
+.cta p {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+/* ========================================
+   Intro & Highlights
+   ======================================== */
 .intro {
   max-width: 800px;
   margin: 2rem auto;
@@ -209,21 +273,9 @@ main {
   margin-bottom: 0.5rem;
 }
 
-.cta {
-  text-align: center;
-  background: #2d4a72;
-  color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  margin: 3rem 2rem;
-}
-
-.cta p {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-/* Contact Form */
+/* ========================================
+   Contact Form
+   ======================================== */
 .contact-container {
   max-width: 600px;
   margin: 3rem auto;
@@ -233,7 +285,8 @@ main {
   border-radius: 8px;
 }
 
-.contact-container h1, .contact-container h2 {
+.contact-container h1,
+.contact-container h2 {
   text-align: center;
   margin-bottom: 1.5rem;
   color: #2d4a72;
@@ -280,7 +333,9 @@ main {
   background: #1d3250;
 }
 
-/* Academics Dashboard */
+/* ========================================
+   Academics Dashboard
+   ======================================== */
 .academics-container {
   max-width: 800px;
   margin: 3rem auto;
@@ -364,7 +419,9 @@ main {
   font-weight: bold;
 }
 
-/* Core Values / General Sections */
+/* ========================================
+   Core Values / General Sections
+   ======================================== */
 .values-section {
   background: #eef3fb;
   border-left: 5px solid #2d4a72;
@@ -396,9 +453,11 @@ main {
   color: #2d4a72;
 }
 
-/* NEW: Auth Forms (Login & Register) */
+/* ========================================
+   Auth Forms (Login & Register)
+   ======================================== */
 .auth-container {
-  max-width: 400px; /* Narrower for auth */
+  max-width: 400px;
   margin: 3rem auto;
   background: #ffffff;
   padding: 2rem;
@@ -473,7 +532,9 @@ main {
   text-decoration: underline;
 }
 
-/* NEW: Application Form */
+/* ========================================
+   Application Form
+   ======================================== */
 .apply-container {
   max-width: 600px;
   margin: 3rem auto;
@@ -566,7 +627,9 @@ main {
   text-decoration: underline;
 }
 
-/* Error & Success Messages */
+/* ========================================
+   Messages
+   ======================================== */
 .error {
   color: #d32f2f;
   background: #ffebee;
@@ -585,7 +648,9 @@ main {
   margin-bottom: 1rem;
 }
 
-/* Footer */
+/* ========================================
+   Footer
+   ======================================== */
 .footer {
   background: #111827;
   color: #fff;
@@ -606,7 +671,7 @@ main {
 }
 
 .footer-social a:hover {
-  color: #60a5fa; /* light blue */
+  color: #60a5fa;
   transform: scale(1.2);
 }
 
@@ -621,19 +686,24 @@ main {
   opacity: 0.8;
 }
 
-/* Responsive Design */
+/* ========================================
+   Form Inputs (Admin/Student)
+   ======================================== */
+select[name="role"],
+input[name="adminSecret"],
+input[name="studentNumber"] {
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
 @media (max-width: 900px) {
   .highlights {
     flex-direction: column;
     margin: 2rem 1rem;
-  }
-
-  .hero {
-    padding: 4rem 1rem;
-  }
-
-  .hero h1 {
-    font-size: 2rem;
   }
 
   header {
@@ -644,6 +714,24 @@ main {
   nav ul {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .hero h1 {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 70vh;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
   }
 }
 
@@ -672,33 +760,17 @@ main {
   .apply-form {
     gap: 0.75rem;
   }
-}
 
-.grid-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  padding: 3rem 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
+  .hero h1 {
+    font-size: 2rem;
+  }
 
-.grid-item {
-  text-align: center;
-}
+  .hero p {
+    font-size: 1rem;
+  }
 
-.grid-item img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-}
-select[name="role"], input[name="adminSecret"], input[name="studentNumber"] {
-  width: 200px;
-  padding: 5px;
-  margin-bottom: 10px;
-}
-.error {
-  color: red;
+  .hero .btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 }
