@@ -1,21 +1,20 @@
+// routes/homeRoutes.js
 const express = require('express');
 const router = express.Router();
 
-// Home
+// Home Page
 router.get('/', (req, res) => {
-  res.render('index', { 
-    title: 'Home', 
-    user: req.user,
-    path: req.path  // <-- ADD THIS
+  res.render('index', {
+    title: 'Home',
+    path: req.path
   });
 });
 
-// About
+// About Page
 router.get('/about', (req, res) => {
-  res.render('about', { 
-    title: 'About Us', 
-    user: req.user,
-    path: req.path  // <-- ADD THIS
+  res.render('about', {
+    title: 'About Us',
+    path: req.path
   });
 });
 
