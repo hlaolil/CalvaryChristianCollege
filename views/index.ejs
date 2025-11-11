@@ -35,31 +35,39 @@
         </div>
       </section>
 
-      <!-- Call-to-Action Section -->
       <% if (!user) { %>
-        <section class="cta">
-          <p>Ready to join us? Start your journey today!</p>
-          <a href="/auth/login" class="btn-primary">Login And Apply Now</a>
-        </section>
-      <% } else { %>
-        <section class="cta">
-          <% if (user.role === 'applicant') { %>
-            <p>Welcome, <%= user.name %>! Ready to apply?</p>
-            <a href="/apply" class="btn-primary">Fill Application Form</a>
-          <% } else if (user.role === 'alumni') { %>
-            <p>Welcome, <%= user.name %>! Join our alumni community!</p>
-            <a href="/alumni" class="btn-primary">Join Alumni Community</a>
-          <% } else if (user.role === 'student') { %>
-            <p>Welcome, <%= user.name %>! Access your student portal!</p>
-            <a href="/student-portal" class="btn-primary">Go to Student Portal</a>
-          <% } else if (user.role === 'admin') { %>
-            <p>Welcome, <%= user.name %>! Manage applications, alumni, or student portal!</p>
-            <a href="/apply" class="btn-primary">Manage Applications</a>
-            <a href="/alumni" class="btn-primary">Manage Alumni</a>
-            <a href="/student-portal" class="btn-primary">Manage Student Portal</a>
-          <% } %>
-        </section>
-      <% } %>
+      <section class="cta">
+        <p>Ready to join us? Start your journey today!</p>
+        <a href="/auth/login" class="btn-primary">Login And Apply Now</a>
+      </section>
+    <% } else { %>
+      <section class="cta">
+        <% const role = (user.role || '').toString().toLowerCase().trim(); %>
+
+        <% if (role === 'applicant') { %>
+          <p>Welcome, <%= user.name %>! Ready to apply?</p>
+          <a href="/apply" class="btn-primary">Fill Application Form</a>
+
+        <% } else if (role === 'alumni') { %>
+          <p>Welcome, <%= user.name %>! Join our alumni community!</p>
+          <a href="/alumni" class="btn-primary">Join Alumni Community</a>
+
+        <% } else if (role === 'student') { %>
+          <p>Welcome, <%= user.name %>! Access your student portal!</p>
+          <a href="/student-portal" class="btn-primary">Go to Student Portal</a>
+
+        <% } else if (role === 'admin') { %>
+          <p>Welcome, <%= user.name %>! Manage applications, alumni, or student portal!</p>
+          <a href="/apply" class="btn-primary">Manage Applications</a>
+          <a href="/alumni" class="btn-primary">Manage Alumni</a>
+          <a href="/student-portal" class="btn-primary">Manage Student Portal</a>
+
+        <% } else { %>
+          <p>Welcome, <%= user.name %>!</p>
+          <p>Role not configured. Contact support.</p>
+        <% } %>
+      </section>
+    <% } %>
 
       <!-- Second Grid Section -->
       <section class="grid-section">
