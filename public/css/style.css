@@ -128,7 +128,7 @@ main {
   max-width: 900px;
   padding: 2rem;
   animation: fadeInUp 1s ease-out;
-   top: 30px; /* moves it 30px down */
+   top: 40px; /* moves it 30px down */
 }
 
 .hero h1 {
