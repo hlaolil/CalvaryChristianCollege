@@ -1,11 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head', { title: title }) %>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* ---- Responsive table ---- */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .95rem;
+      background: #fff;
+    }
+    th, td {
+      padding: .75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    thead th {
+      background: #e8f5e9;
+      position: sticky;
+      top: 0;
+    }
+    /* Mobile: stack rows */
+    @media (max-width: 640px) {
+      .table-wrapper { overflow-x: hidden; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: .5rem;
+        background: #fafafa;
+      }
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        white-space: nowrap;
+      }
+      td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 6px;
+        width: 45%;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
 <body>
   <%- include('partials/header') %>
   <main class="container">
     <h1>Student Portal</h1>
-
     <% if (error) { %>
       <p class="error"><%= error %></p>
     <% } %>
@@ -17,7 +71,6 @@
       <p><strong>Email:</strong> <%= user.email %></p>
       <p><strong>Role:</strong> <span class="badge" style="background:#1976d2; color:white; padding:3px 8px; border-radius:4px;"><%= user.role.toUpperCase() %></span></p>
       <p><strong>Joined:</strong> <%= user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—' %></p>
-
       <% if (studentApp) { %>
         <hr>
         <h3>Application Status</h3>
@@ -29,7 +82,6 @@
           </span>
         </p>
         <p><strong>Submitted:</strong> <%= new Date(studentApp.submittedAt).toLocaleString() %></p>
-
         <% if (studentApp.status === 'Approved') { %>
           <p class="success">You are officially enrolled!</p>
         <% } else if (studentApp.status === 'Rejected') { %>
@@ -46,40 +98,43 @@
     <% if (user.role === 'admin') { %>
       <hr>
       <h2>All Students</h2>
-
       <% if (allStudents.length > 0) { %>
-        <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.95rem;">
-          <thead style="background:#e8f5e9;">
-            <tr>
-              <th>#</th>
-              <th>Student #</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>           <!-- NEW -->
-              <th>Program</th>         <!-- NEW -->
-              <th>App Status</th>
-              <th>Submitted</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% allStudents.forEach((s, i) => { %>
+        <div class="table-wrapper">
+          <table>
+            <thead>
               <tr>
-                <td><%= i + 1 %></td>
-                <td><code><%= s.studentNumber || '—' %></code></td>
-                <td><%= s.name %></td>
-                <td><%= s.email %></td>
-                <td><%= s.phoneNumber || '—' %></td>                 <!-- SHOW PHONE -->
-                <td><%= s.programOfStudy || '—' %></td>              <!-- SHOW PROGRAM -->
-                <td>
-                  <span style="color: <%= s.application.status === 'Approved' ? 'green' : s.application.status === 'Rejected' ? 'red' : 'orange' %>">
-                    <%= s.application.status || 'Pending' %>
-                  </span>
-                </td>
-                <td><%= s.application.submittedAt ? new Date(s.application.submittedAt).toLocaleDateString() : '—' %></td>
+                <th>#</th>
+                <th>Student #</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Program</th>
+                <th>App Status</th>
+                <th>Submitted</th>
               </tr>
-            <% }) %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <% allStudents.forEach((s, i) => { %>
+                <tr>
+                  <td data-label="#"> <%= i + 1 %> </td>
+                  <td data-label="Student #"> <code><%= s.studentNumber || '—' %></code> </td>
+                  <td data-label="Name"> <%= s.name %> </td>
+                  <td data-label="Email"> <%= s.email %> </td>
+                  <td data-label="Phone"> <%= s.phoneNumber || '—' %> </td>
+                  <td data-label="Program"> <%= s.programOfStudy || '—' %> </td>
+                  <td data-label="App Status">
+                    <span style="color: <%= s.application.status === 'Approved' ? 'green' : s.application.status === 'Rejected' ? 'red' : 'orange' %>">
+                      <%= s.application.status || 'Pending' %>
+                    </span>
+                  </td>
+                  <td data-label="Submitted">
+                    <%= s.application.submittedAt ? new Date(s.application.submittedAt).toLocaleDateString() : '—' %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
       <% } else { %>
         <p><em>No students registered yet.</em></p>
       <% } %>
