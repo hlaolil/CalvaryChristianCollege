@@ -1,154 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head', { title: title }) %>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --primary:#1976d2;--success:#2e7d32;--error:#d32f2f;
+      --gray:#555;--light:#f9f9f9;--border:#ddd;
+    }
+    body{font-family:system-ui,Arial,sans-serif;line-height:1.5;color:#333;}
+    .container{max-width:960px;margin:auto;padding:1rem;}
+    h1,h2{margin:1.5rem 0 .5rem;color:var(--primary);}
+    .success{color:var(--success);font-weight:bold;}
+    .error{color:var(--error);font-weight:bold;}
+
+    /* ---------- FORM ---------- */
+    .alumni-form{
+      display:flex;flex-direction:column;gap:1rem;
+      background:#fff;padding:1.2rem;border-radius:10px;
+      border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.08);
+    }
+    .form-group{display:flex;flex-direction:column;gap:.35rem;}
+    label{font-weight:600;}
+    input,select,textarea{
+      padding:.75rem;border:1px solid #ccc;border-radius:6px;
+      font-size:1rem;width:100%;box-sizing:border-box;
+    }
+    input:focus,select:focus,textarea:focus{
+      outline:none;border-color:var(--primary);
+      box-shadow:0 0 0 2px rgba(25,118,210,.2);
+    }
+    input[readonly]{background:#f5f5f5;color:var(--gray);cursor:not-allowed;}
+    textarea{resize:vertical;min-height:100px;}
+    button{
+      background:var(--primary);color:#fff;border:none;
+      padding:.9rem 1.8rem;font-size:1.1rem;border-radius:6px;
+      cursor:pointer;align-self:flex-start;margin-top:.5rem;
+    }
+    button:hover{background:#1565c0;}
+
+    /* ---------- ADMIN CARDS ---------- */
+    .admin-section{margin-top:2rem;}
+    .card{
+      margin-bottom:1.2rem;border:1px solid var(--border);
+      border-radius:10px;overflow:hidden;background:#fff;
+      box-shadow:0 2px 6px rgba(0,0,0,.1);
+    }
+    .card summary{
+      padding:1rem;background:#e3f2fd;font-weight:bold;
+      cursor:pointer;display:flex;justify-content:space-between;
+      align-items:center;flex-wrap:wrap;gap:.5rem;
+    }
+    .card summary::-webkit-details-marker{display:none;}
+    .card summary::after{
+      content:'expand_more';font-family:'Material Icons',sans-serif;
+      font-size:1.4rem;transition:transform .2s;
+    }
+    .card[open] summary::after{content:'expand_less';}
+    .card .details{
+      padding:1rem;line-height:1.6;background:#fafafa;
+      border-top:1px solid var(--border);
+    }
+    .card .section{margin-bottom:1rem;}
+    .card .section strong{color:var(--primary);display:block;margin-bottom:.3rem;}
+    .card pre{
+      background:#fff;padding:.6rem;border-radius:6px;
+      border:1px solid #eee;white-space:pre-wrap;
+      font-family:inherit;margin:.4rem 0;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width:640px){
+      .alumni-form{padding:1rem;}
+      .card summary{font-size:.95rem;flex-direction:column;align-items:flex-start;}
+      .card .details{font-size:.95rem;}
+    }
+
+    /* ---------- LINKS ---------- */
+    a{color:var(--primary);text-decoration:none;}
+    a:hover{text-decoration:underline;}
+  </style>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
 <body>
   <%- include('partials/header') %>
-  <main>
-    <h1>Application Form</h1>
+  <main class="container">
+    <h1>Alumni Registration</h1>
+
     <% if (success) { %><p class="success">Registration submitted successfully!</p><% } %>
-    <% if (error) { %><p class="error"><%= error %></p><% } %>
+    <% if (error)   { %><p class="error"><%= error %></p><% } %>
+
     <% if (user) { %>
-      <form action="/alumni" method="POST">
+      <form class="alumni-form" action="/alumni" method="POST" novalidate>
         <h2>Personal Information</h2>
-        <label>Name:</label>
-        <input type="text" name="name" value="<%= user.name %>" readonly><br>
-        
-        <label>Email:</label>
-        <input type="email" name="email" value="<%= user.email %>" readonly><br>
-        
-        <label>Phone Number:</label>
-        <input type="tel" name="phone" required placeholder="+266 ..."><br>
-        
-        <label>Date of Birth:</label>
-        <input type="date" name="dob" required><br>
-        
-        <label>Address:</label>
-        <input type="text" name="street_address" required placeholder="Street Address"><br>
-        
-        <label>Town/City:</label>
-        <input type="text" name="town" required placeholder="Town/City"><br>
-        
-        <label>District:</label>
-        <select name="district" required>
-          <option value="">Select District</option>
-          <option value="Berea">Berea</option>
-          <option value="Butha-Buthe">Butha-Buthe</option>
-          <option value="Leribe">Leribe</option>
-          <option value="Mafeteng">Mafeteng</option>
-          <option value="Maseru">Maseru</option>
-          <option value="Mohale's Hoek">Mohale's Hoek</option>
-          <option value="Mokhotlong">Mokhotlong</option>
-          <option value="Qacha's Nek">Qacha's Nek</option>
-          <option value="Quthing">Quthing</option>
-          <option value="Thaba-Tseka">Thaba-Tseka</option>
-        </select><br>
-        
-        <label>Postal Code:</label>
-        <input type="text" name="postal_code" required placeholder="Postal Code"><br>
-        
-        <label>Country:</label>
-        <input type="text" name="country" value="Lesotho" readonly><br>
-        
-        <label>Graduation Year:</label>
-        <input type="number" name="grad_year" required min="1900" max="2030" placeholder="Year"><br>
-      <br>
-        
-        <label>Current Church Name *:</label>
-        <input type="text" name="current_church_name" required placeholder="Church Name"><br>
-        
-        <label>Current Church City *:</label>
-        <input type="text" name="current_church_city" required placeholder="City"><br>
-        
-        <label>Current Church Country *:</label>
-        <input type="text" name="current_church_country" required placeholder="Country"><br>
-        
-        <label>Pastor's Name *:</label>
-        <input type="text" name="pastor_name" required placeholder="Pastor's Full Name"><br>
-        
-        <label>Are you a member? *:</label>
-        <select name="church_member" required>
-          <option value="">Select</option>
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-        </select><br>
-        
-        <label>Church Denominational Affiliation *:</label>
-        <input type="text" name="church_denomination" required placeholder="Denominational Affiliation"><br>
-        
-        <label>Do you have ministerial credentials? *:</label>
-        <select name="ministerial_credentials" required>
-          <option value="">Select</option>
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-        </select><br>
-        
-        <br>
-        
-        <label>Ministry Positions *:</label>
-        <textarea name="ministry_positions" rows="4" cols="50" required placeholder="Examples: Pastor, Missionary, College Teacher (etc.). Please list ALL current ministry positions, along with the full name of the church or institution for each."></textarea><br>
-        
-        <label>Your National Church Leader Name *:</label>
-        <input type="text" name="national_leader_name" required placeholder="Name"><br>
-        
-        <label>Position (e.g., superintendent, bishop, general overseer, apostle, pastor, prophet, reverend, etc) *:</label>
-        <input type="text" name="national_leader_position" required placeholder="Position"><br>
-        
-        <label>Address *:</label>
-        <textarea name="national_leader_address" rows="3" cols="50" required placeholder="Address and Contact Number"></textarea><br>
-        
-        <br>
-        
-        <label>Message (Optional):</label>
-        <textarea name="message" rows="4" cols="50" placeholder="Any additional comments or questions."></textarea><br>
-        <p>Annual Subscrption Fee: TBD</p>
+
+        <div class="form-group"><label>Name:</label>
+          <input type="text" name="name" value="<%= user.name %>" readonly></div>
+
+        <div class="form-group"><label>Email:</label>
+          <input type="email" name="email" value="<%= user.email %>" readonly></div>
+
+        <div class="form-group"><label>Phone Number *:</label>
+          <input type="tel" name="phone" required placeholder="+266 1234 5678"></div>
+
+        <div class="form-group"><label>Date of Birth *:</label>
+          <input type="date" name="dob" required max="<%= new Date().toISOString().split('T')[0] %>"></div>
+
+        <div class="form-group"><label>Street Address *:</label>
+          <input type="text" name="street_address" required placeholder="123 Main Street"></div>
+
+        <div class="form-group"><label>Town/City *:</label>
+          <input type="text" name="town" required placeholder="Maseru"></div>
+
+        <div class="form-group"><label>District *:</label>
+          <select name="district" required>
+            <option value="">Select District</option>
+            <option value="Berea">Berea</option>
+            <option value="Butha-Buthe">Butha‑Buthe</option>
+            <option value="Leribe">Leribe</option>
+            <option value="Mafeteng">Mafeteng</option>
+            <option value="Maseru">Maseru</option>
+            <option value="Mohale's Hoek">Mohale's Hoek</option>
+            <option value="Mokhotlong">Mokhotlong</option>
+            <option value="Qacha's Nek">Qacha's Nek</option>
+            <option value="Quthing">Quthing</option>
+            <option value="Thaba-Tseka">Thaba‑Tseka</option>
+          </select></div>
+
+        <div class="form-group"><label>Postal Code *:</label>
+          <input type="text" name="postal_code" required placeholder="100"></div>
+
+        <div class="form-group"><label>Country:</label>
+          <input type="text" name="country" value="Lesotho" readonly></div>
+
+        <div class="form-group"><label>Graduation Year *:</label>
+          <input type="number" name="grad_year" required min="1950" max="2030" placeholder="2024"></div>
+
+        <h2>Church Information</h2>
+
+        <div class="form-group"><label>Current Church Name *:</label>
+          <input type="text" name="current_church_name" required></div>
+
+        <div class="form-group"><label>Current Church City *:</label>
+          <input type="text" name="current_church_city" required></div>
+
+        <div class="form-group"><label>Current Church Country *:</label>
+          <input type="text" name="current_church_country" required value="Lesotho"></div>
+
+        <div class="form-group"><label>Pastor's Name *:</label>
+          <input type="text" name="pastor_name" required></div>
+
+        <div class="form-group"><label>Are you a member? *:</label>
+          <select name="church_member" required>
+            <option value="">Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select></div>
+
+        <div class="form-group"><label>Church Denominational Affiliation *:</label>
+          <input type="text" name="church_denomination" required placeholder="e.g. Assemblies of God"></div>
+
+        <div class="form-group"><label>Do you have ministerial credentials? *:</label>
+          <select name="ministerial_credentials" required>
+            <option value="">Select</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select></div>
+
+        <div class="form-group"><label>Ministry Positions *:</label>
+          <textarea name="ministry_positions" rows="4" required
+                    placeholder="Pastor, Missionary, College Teacher, etc. – list ALL current positions with church/institution name."></textarea></div>
+
+        <div class="form-group"><label>National Church Leader Name *:</label>
+          <input type="text" name="national_leader_name" required></div>
+
+        <div class="form-group"><label>Position *:</label>
+          <input type="text" name="national_leader_position" required
+                 placeholder="superintendent, bishop, general overseer, apostle, etc."></div>
+
+        <div class="form-group"><label>Address & Contact *:</label>
+          <textarea name="national_leader_address" rows="3" required
+                    placeholder="Full address, phone, email…"></textarea></div>
+
+        <div class="form-group"><label>Message (Optional):</label>
+          <textarea name="message" rows="4"
+                    placeholder="Any additional comments or questions."></textarea></div>
+
+        <p><strong>Annual Subscription Fee: TBD</strong></p>
         <button type="submit">Submit Registration</button>
       </form>
+
       <p><a href="/">Back to Home</a></p>
     <% } else { %>
-      <p>You must be logged in to apply. <a href="/auth/login">Login here</a></p>
+      <p>You must be logged in to register. <a href="/auth/login">Login here</a></p>
     <% } %>
-    <% if (user.role === 'admin') { %>
+
+    <!-- ==================== ADMIN VIEW ==================== -->
+    <% if (user && user.role === 'admin') { %>
       <hr>
-      <h2>All Alumni Submissions</h2>
+      <div class="admin-section">
+        <h2>All Alumni Submissions</h2>
+        <% if (alumni && alumni.length > 0) { %>
+          <% alumni.forEach((a, i) => { %>
+            <details class="card">
+              <summary>
+                <span>#<%= i + 1 %> – <%= a.name %> (<%= a.email %>)</span>
+                <span>Grad Year: <%= a.grad_year %></span>
+                <small>Submitted: <%= new Date(a.submittedAt)
+                  .toLocaleString('en-LS',{timeZone:'Africa/Maseru'}) %></small>
+              </summary>
+              <div class="details">
+                <div class="section"><strong>Personal</strong><br>
+                  Phone: <%= a.phone %> | DOB: <%= new Date(a.dob).toLocaleDateString() %><br>
+                  Address: <%= a.street_address %>, <%= a.town %>, <%= a.district %> <%= a.postal_code %>
+                </div>
 
-      <% if (alumni && alumni.length > 0) { %>
-        <% alumni.forEach((a, i) => { %>
-          <details style="margin:1.5rem 0; padding:1rem; border:1px solid #ddd; border-radius:8px;">
-            <summary style="font-weight:bold; cursor:pointer;">
-              #<%= i + 1 %> – <%= a.name %> (<%= a.email %>)
-              <small style="color:#666; margin-left:1rem;">
-                Grad Year: <%= a.grad_year %> – <%= new Date(a.submittedAt).toLocaleDateString() %>
-              </small>
-            </summary>
+                <div class="section"><strong>Church</strong><br>
+                  <%= a.current_church_name %>, <%= a.current_church_city %>, <%= a.current_church_country %><br>
+                  Pastor: <%= a.pastor_name %> | Member: <%= a.church_member %><br>
+                  Denomination: <%= a.church_denomination %> | Credentials: <%= a.ministerial_credentials %>
+                </div>
 
-            <div style="margin-top:1rem; line-height:1.7;">
-              <strong>Personal</strong><br>
-              Phone: <%= a.phone %> | DOB: <%= new Date(a.dob).toLocaleDateString() %><br>
-              Address: <%= a.street_address %>, <%= a.town %>, <%= a.district %> <%= a.postal_code %><br><br>
+                <div class="section"><strong>Ministry Positions</strong><br>
+                  <pre><%= a.ministry_positions %></pre>
+                </div>
 
-              <strong>Church</strong><br>
-              Church: <%= a.current_church_name %>, <%= a.current_church_city %>, <%= a.current_church_country %><br>
-              Pastor: <%= a.pastor_name %> | Member: <%= a.church_member %><br>
-              Denomination: <%= a.church_denomination %><br>
-              Credentials: <%= a.ministerial_credentials %><br>
+                <div class="section"><strong>National Leader</strong><br>
+                  <%= a.national_leader_name %> (<%= a.national_leader_position %>)<br>
+                  <pre><%= a.national_leader_address %></pre>
+                </div>
 
-              <strong>Ministry</strong><br>
-              <pre style="background:#f9f9f9; padding:0.8rem; border-radius:4px;"><%= a.ministry_positions %></pre>
-
-              <strong>National Leader</strong><br>
-              <%= a.national_leader_name %> (<%= a.national_leader_position %>)<br>
-              <pre style="background:#f9f9f9; padding:0.8rem; border-radius:4px;"><%= a.national_leader_address %></pre>
-
-              <% if (a.message) { %>
-                <strong>Message</strong><br>
-                <pre style="background:#f9f9f9; padding:0.8rem; border-radius:4px;"><%= a.message %></pre>
-              <% } %>
-            </div>
-          </details>
-        <% }) %>
-      <% } else { %>
-        <p><em>No alumni submissions yet.</em></p>
-      <% } %>
+                <% if (a.message) { %>
+                  <div class="section"><strong>Message</strong><br>
+                    <pre><%= a.message %></pre>
+                  </div>
+                <% } %>
+              </div>
+            </details>
+          <% }) %>
+        <% } else { %>
+          <p><em>No alumni submissions yet.</em></p>
+        <% } %>
+      </div>
     <% } %>
   </main>
   <%- include('partials/footer') %>
