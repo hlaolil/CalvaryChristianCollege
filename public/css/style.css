@@ -131,10 +131,53 @@ main {
    top: 30px; /* moves it 30px down */
 }
 
+/* ========================================
+   HERO H1 INFINITE SCROLLING ANIMATION
+   ======================================== */
+
 .hero h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+
+  /* NEW: Make it scroll horizontally */
+  white-space: nowrap;           /* Prevent line breaks */
+  overflow: hidden;              /* Hide overflow */
+  display: inline-block;
+  padding-left: 100%;             /* Start from outside right */
+  
+  /* Animation properties */
+  animation: scrollLeft 20s linear infinite;
+}
+
+/* The actual animation */
+@keyframes scrollLeft {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+/* Optional: Pause animation on hover (nice UX touch) */
+.hero h1:hover {
+  animation-play-state: paused;
+}
+
+/* Responsive adjustments – keep text readable on mobile */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2rem;
+    animation-duration: 15s; /* a bit faster on small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.7rem;
+    animation-duration: 12s;
+  }
 }
 
 .hero p {
