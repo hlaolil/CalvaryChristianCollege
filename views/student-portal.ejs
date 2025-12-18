@@ -27,6 +27,35 @@
       position: sticky;
       top: 0;
     }
+
+    /* Sortable headers */
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      padding-right: 28px !important;
+    }
+    th.sortable:hover {
+      background: #c8e6c9 !important;
+    }
+    th.sortable::after {
+      content: "↕";
+      position: absolute;
+      right: 8px;
+      opacity: 0.5;
+      font-size: 0.9em;
+    }
+    th.sortable.asc::after {
+      content: "↑";
+      opacity: 1;
+      font-weight: bold;
+    }
+    th.sortable.desc::after {
+      content: "↓";
+      opacity: 1;
+      font-weight: bold;
+    }
+
     /* Mobile: stack rows */
     @media (max-width: 640px) {
       .table-wrapper { overflow-x: hidden; }
@@ -38,12 +67,14 @@
         border-radius: 6px;
         padding: .5rem;
         background: #fafafa;
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
       }
       td {
         border: none;
         position: relative;
         padding-left: 50%;
-        white-space: nowrap;
+        white-space: normal;
+        word-wrap: break-word;
       }
       td:before {
         content: attr(data-label);
@@ -52,8 +83,17 @@
         width: 45%;
         font-weight: bold;
         white-space: nowrap;
+        color: #444;
       }
     }
+
+    /* General styles */
+    .error { color: red; font-weight: bold; }
+    .success { color: green; font-weight: bold; }
+    .warning { color: orange; font-weight: bold; }
+    .info { color: #1976d2; font-weight: bold; }
+    main a { color: #1976d2; text-decoration: none; }
+    main a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -71,6 +111,7 @@
       <p><strong>Email:</strong> <%= user.email %></p>
       <p><strong>Role:</strong> <span class="badge" style="background:#1976d2; color:white; padding:3px 8px; border-radius:4px;"><%= user.role.toUpperCase() %></span></p>
       <p><strong>Joined:</strong> <%= user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—' %></p>
+
       <% if (studentApp) { %>
         <hr>
         <h3>Application Status</h3>
@@ -100,17 +141,17 @@
       <h2>All Students</h2>
       <% if (allStudents.length > 0) { %>
         <div class="table-wrapper">
-          <table>
+          <table id="students-table">
             <thead>
               <tr>
                 <th>#</th>
-                <th>Student #</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Program</th>
-                <th>App Status</th>
-                <th>Submitted</th>
+                <th class="sortable">Student #</th>
+                <th class="sortable">Name</th>
+                <th class="sortable">Email</th>
+                <th class="sortable">Phone</th>
+                <th class="sortable">Program</th>
+                <th class="sortable">App Status</th>
+                <th class="sortable">Submitted</th>
               </tr>
             </thead>
             <tbody>
@@ -123,7 +164,7 @@
                   <td data-label="Phone"> <%= s.phoneNumber || '—' %> </td>
                   <td data-label="Program"> <%= s.programOfStudy || '—' %> </td>
                   <td data-label="App Status">
-                    <span style="color: <%= s.application.status === 'Approved' ? 'green' : s.application.status === 'Rejected' ? 'red' : 'orange' %>">
+                    <span style="color: <%= s.application.status === 'Approved' ? 'green' : s.application.status === 'Rejected' ? 'red' : 'orange' %>; font-weight:bold;">
                       <%= s.application.status || 'Pending' %>
                     </span>
                   </td>
@@ -142,6 +183,80 @@
 
     <p><a href="/">Back to Home</a></p>
   </main>
+
   <%- include('partials/footer') %>
+
+  <!-- Client-side sortable table script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const table = document.getElementById("students-table");
+      if (!table) return;
+
+      const headers = table.querySelectorAll("th.sortable");
+
+      headers.forEach(header => {
+        header.addEventListener("click", () => {
+          const index = Array.from(header.parentNode.children).indexOf(header);
+          const isAsc = header.classList.toggle("asc");
+          if (!isAsc) header.classList.add("desc");
+          else header.classList.remove("desc");
+
+          // Reset other headers
+          headers.forEach(h => {
+            if (h !== header) h.classList.remove("asc", "desc");
+          });
+
+          sortTable(table, index, isAsc);
+        });
+      });
+
+      function sortTable(table, columnIndex, ascending) {
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        rows.sort((rowA, rowB) => {
+          const cellA = rowA.children[columnIndex];
+          const cellB = rowB.children[columnIndex];
+
+          let valA = cellA.textContent.trim();
+          let valB = cellB.textContent.trim();
+
+          // Special handling for date column (Submitted)
+          if (columnIndex === 7) { // Submitted date column
+            if (valA === '—') valA = '';
+            if (valB === '—') valB = '';
+            if (!valA && !valB) return 0;
+            if (!valA) return ascending ? 1 : -1;
+            if (!valB) return ascending ? -1 : 1;
+
+            const dateA = new Date(valA);
+            const dateB = new Date(valB);
+            return ascending ? dateA - dateB : dateB - dateA;
+          }
+
+          // Special handling for App Status (sort by text: Pending → Approved → Rejected)
+          if (columnIndex === 6) {
+            const order = { 'Pending': 0, 'Approved': 1, 'Rejected': 2 };
+            const aOrder = order[valA] ?? -1;
+            const bOrder = order[valB] ?? -1;
+            return ascending ? aOrder - bOrder : bOrder - aOrder;
+          }
+
+          // Natural sort for everything else (numbers and strings)
+          return ascending
+            ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' })
+            : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        // Re-append rows in sorted order
+        rows.forEach(row => tbody.appendChild(row));
+
+        // Re-number the # column
+        tbody.querySelectorAll("tr").forEach((row, i) => {
+          row.children[0].textContent = i + 1;
+        });
+      }
+    });
+  </script>
 </body>
 </html>
