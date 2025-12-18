@@ -12,7 +12,6 @@
       --light: #f9f9f9;
       --border: #ddd;
     }
-
     /* Form Styling */
     .application-form {
       max-width: 100%;
@@ -22,7 +21,6 @@
       gap: 1rem;
       font-size: 1rem;
     }
-
     .form-section {
       background: #fff;
       padding: 1.2rem;
@@ -30,7 +28,6 @@
       border: 1px solid var(--border);
       box-shadow: 0 1px 4px rgba(0,0,0,.08);
     }
-
     .form-section h2 {
       margin: 0 0 1rem;
       padding-bottom: .5rem;
@@ -38,18 +35,15 @@
       color: var(--primary);
       font-size: 1.3rem;
     }
-
     .form-group {
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
     }
-
     label {
       font-weight: 600;
       color: #333;
     }
-
     input, select, textarea {
       padding: 0.75rem;
       border: 1px solid #ccc;
@@ -59,24 +53,20 @@
       box-sizing: border-box;
       transition: border 0.2s;
     }
-
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 2px rgba(25,118,210,.2);
     }
-
     input[readonly] {
       background: #f5f5f5;
       color: var(--gray);
       cursor: not-allowed;
     }
-
     textarea {
       resize: vertical;
       min-height: 100px;
     }
-
     button {
       background: var(--primary);
       color: white;
@@ -90,11 +80,9 @@
       margin-top: 0.5rem;
       transition: background 0.2s;
     }
-
     button:hover {
       background: #1565c0;
     }
-
     /* Messages */
     .success { color: var(--success); font-weight: bold; }
     .error { color: var(--error); font-weight: bold; }
@@ -106,87 +94,112 @@
     }
     main a:hover { text-decoration: underline; }
 
-    /* Admin Applications */
+    /* ==================== ADMIN APPLICATIONS TABLE ==================== */
     .admin-applications {
-      margin-top: 2rem;
+      margin-top: 2.5rem;
     }
-
-    .app-card {
-      margin-bottom: 1.2rem;
-      border: 1px solid var(--border);
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 1.5rem 0;
       border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
       background: #fff;
     }
-
-    .app-card summary {
-      padding: 1rem;
-      font-weight: bold;
+    #applications-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .95rem;
+    }
+    #applications-table th, #applications-table td {
+      padding: .9rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    #applications-table thead th {
       background: #e3f2fd;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    #applications-table tbody tr:hover {
+      background: #f5faff;
+    }
+    th.sortable {
       cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: .5rem;
+      user-select: none;
+      position: relative;
+      padding-right: 30px !important;
     }
+    th.sortable:hover {
+      background: #bbdefb !important;
+    }
+    th.sortable::after {
+      content: "↕";
+      position: absolute;
+      right: 10px;
+      opacity: 0.5;
+      font-size: 1em;
+    }
+    th.sortable.asc::after {
+      content: "↑";
+      opacity: 1;
+      font-weight: bold;
+    }
+    th.sortable.desc::after {
+      content: "↓";
+      opacity: 1;
+      font-weight: bold;
+    }
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: .85rem;
+      font-weight: bold;
+      color: white;
+    }
+    .status-pending { background: orange; }
+    .status-approved { background: var(--success); }
+    .status-rejected { background: var(--error); }
 
-    .app-card summary::-webkit-details-marker { display: none; }
-    .app-card summary::after {
-      content: 'expand_more';
-      font-family: 'Material Icons', sans-serif;
-      font-size: 1.4rem;
-      transition: transform .2s;
-    }
-    .app-card[open] summary::after {
-      content: 'expand_less';
-    }
-
-    .app-card .details {
-      padding: 1rem;
-      line-height: 1.6;
-      border-top: 1px solid var(--border);
-      background: #fafafa;
-    }
-
-    .app-card .section {
-      margin-bottom: 1rem;
-    }
-
-    .app-card .section strong {
-      color: var(--primary);
-      display: block;
-      margin-bottom: .3rem;
-    }
-
-    .app-card pre {
-      background: #fff;
-      padding: .6rem;
-      border-radius: 6px;
-      border: 1px solid #eee;
-      white-space: pre-wrap;
-      font-family: inherit;
-      margin: .4rem 0;
-    }
-
-    /* Mobile Adjustments */
+    /* Mobile stacked view */
     @media (max-width: 640px) {
-      .form-section { padding: 1rem; }
-      .app-card summary {
-        font-size: .95rem;
-        flex-direction: column;
-        align-items: flex-start;
+      .table-wrapper { overflow-x: hidden; }
+      #applications-table, thead, tbody, th, td, tr {
+        display: block;
       }
-      .app-card .details { font-size: .95rem; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        background: #fafafa;
+        box-shadow: 0 1px 4px rgba(0,0,0,.08);
+      }
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        padding-top: .6rem;
+        padding-bottom: .6rem;
+      }
+      td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 12px;
+        width: 45%;
+        font-weight: bold;
+        color: #444;
+        white-space: nowrap;
+      }
+      .details-cell { padding-left: 12px; }
     }
 
     /* Print-friendly */
     @media print {
-      .form-section, .app-card { box-shadow: none; border: 1px solid #aaa; }
+      .form-section, .table-wrapper { box-shadow: none; border: 1px solid #aaa; }
     }
   </style>
-  <!-- Material Icons for expand/collapse -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
@@ -202,7 +215,6 @@
         <% if (typeof csrfToken !== 'undefined') { %>
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <% } %>
-
         <!-- Personal Information -->
         <div class="form-section">
           <h2>Personal Information</h2>
@@ -248,7 +260,6 @@
             <input type="text" name="country" value="Lesotho" readonly>
           </div>
         </div>
-
         <!-- High School -->
         <div class="form-section">
           <h2>High School Education</h2>
@@ -261,7 +272,6 @@
             <input type="number" name="grad_year" required min="1950" max="2030" placeholder="2024">
           </div>
         </div>
-
         <!-- Church / Spiritual -->
         <div class="form-section">
           <h2>Church & Spiritual Information</h2>
@@ -317,7 +327,6 @@
             <textarea name="national_leader_address" rows="3" required placeholder="Full address, phone, email..."></textarea>
           </div>
         </div>
-
         <!-- Program -->
         <div class="form-section">
           <h2>Program Information</h2>
@@ -364,53 +373,64 @@
           <button type="submit">Submit Application</button>
         </div>
       </form>
-
       <p><a href="/">Back to Home</a></p>
 
-      <!-- ==================== ADMIN: ALL APPLICATIONS ==================== -->
+      <!-- ==================== ADMIN: ALL APPLICATIONS TABLE ==================== -->
       <% if (user.role === 'admin') { %>
         <hr>
         <div class="admin-applications">
           <h2>All Submitted Applications</h2>
           <% if (applications && applications.length > 0) { %>
-            <% applications.forEach((app, index) => { %>
-              <details class="app-card">
-                <summary>
-                  <span>#<%= index + 1 %> – <%= app.name %> (<%= app.email %>)</span>
-                  <span><%= app.program %> – <%= app.semester %></span>
-                  <small>Submitted: <%= new Date(app.submittedAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %></small>
-                </summary>
-                <div class="details">
-                  <div class="section"><strong>Personal</strong><br>
-                    Phone: <%= app.phone %> | DOB: <%= new Date(app.dob).toLocaleDateString() %><br>
-                    Address: <%= app.street_address %>, <%= app.town %>, <%= app.district %> <%= app.postal_code %>
-                  </div>
-                  <div class="section"><strong>Education</strong><br>
-                    High School: <%= app.high_school %> | Grad Year: <%= app.grad_year %>
-                  </div>
-                  <div class="section"><strong>Church</strong><br>
-                    Salvation: <%= app.salvation %> | Baptism: <%= app.baptism %> | Holy Spirit: <%= app.holy_spirit %><br>
-                    Church: <%= app.current_church_name %>, <%= app.current_church_city %>, <%= app.current_church_country %><br>
-                    Pastor: <%= app.pastor_name %> | Member: <%= app.church_member %><br>
-                    Denomination: <%= app.church_denomination %> | Personal: <%= app.personal_denomination %><br>
-                    Credentials: <%= app.ministerial_credentials %>
-                  </div>
-                  <div class="section"><strong>Ministry Positions</strong><br>
-                    <pre><%= app.ministry_positions %></pre>
-                  </div>
-                  <div class="section"><strong>National Leader</strong><br>
-                    Name: <%= app.national_leader_name %> | Position: <%= app.national_leader_position %><br>
-                    <pre><%= app.national_leader_address %></pre>
-                  </div>
-                  <div class="section"><strong>Program</strong><br>
-                    <%= app.program %> – <%= app.semester %>
-                    <% if (app.message) { %>
-                      <br><strong>Message:</strong><br><pre><%= app.message %></pre>
-                    <% } %>
-                  </div>
-                </div>
-              </details>
-            <% }) %>
+            <div class="table-wrapper">
+              <table id="applications-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th class="sortable">Name</th>
+                    <th class="sortable">Email</th>
+                    <th class="sortable">Phone</th>
+                    <th class="sortable">Program</th>
+                    <th class="sortable">Semester</th>
+                    <th class="sortable">Status</th>
+                    <th class="sortable">Submitted</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% applications.forEach((app, index) => { %>
+                    <tr>
+                      <td data-label="#"> <%= index + 1 %> </td>
+                      <td data-label="Name"> <%= app.name %> </td>
+                      <td data-label="Email"> <%= app.email %> </td>
+                      <td data-label="Phone"> <%= app.phone %> </td>
+                      <td data-label="Program"> <%= app.program %> </td>
+                      <td data-label="Semester"> <%= app.semester %> </td>
+                      <td data-label="Status">
+                        <span class="status-badge status-<%= (app.status || 'pending').toLowerCase() %>">
+                          <%= (app.status || 'Pending').toUpperCase() %>
+                        </span>
+                      </td>
+                      <td data-label="Submitted">
+                        <%= new Date(app.submittedAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %>
+                      </td>
+                      <td data-label="Details" class="details-cell">
+                        <details>
+                          <summary style="cursor:pointer; color:var(--primary); font-weight:600;">View Details</summary>
+                          <div style="margin-top:.8rem; line-height:1.6; font-size:.92rem;">
+                            <div><strong>Personal:</strong> DOB <%= new Date(app.dob).toLocaleDateString() %>, <%= app.district %></div>
+                            <div><strong>Education:</strong> <%= app.high_school %> (<%= app.grad_year %>)</div>
+                            <div><strong>Church:</strong> <%= app.current_church_name %>, Pastor: <%= app.pastor_name %></div>
+                            <% if (app.message) { %>
+                              <div><strong>Message:</strong> <%= app.message %></div>
+                            <% } %>
+                          </div>
+                        </details>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
           <% } else { %>
             <p><em>No applications submitted yet.</em></p>
           <% } %>
@@ -421,6 +441,68 @@
       <p>You must be logged in to apply. <a href="/auth/login">Login here</a></p>
     <% } %>
   </main>
+
   <%- include('partials/footer') %>
+
+  <!-- Client-side sorting for applications table -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const table = document.getElementById("applications-table");
+      if (!table) return;
+
+      const headers = table.querySelectorAll("th.sortable");
+
+      headers.forEach(header => {
+        header.addEventListener("click", () => {
+          const index = Array.from(header.parentNode.children).indexOf(header);
+          const isAsc = header.classList.toggle("asc");
+          if (!isAsc) header.classList.add("desc");
+          else header.classList.remove("desc");
+
+          headers.forEach(h => {
+            if (h !== header) h.classList.remove("asc", "desc");
+          });
+
+          sortTable(table, index, isAsc);
+        });
+      });
+
+      function sortTable(table, columnIndex, ascending) {
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        rows.sort((a, b) => {
+          let valA = a.children[columnIndex].textContent.trim();
+          let valB = b.children[columnIndex].textContent.trim();
+
+          // Date column (Submitted)
+          if (columnIndex === 7) {
+            const dateA = new Date(valA);
+            const dateB = new Date(valB);
+            return ascending ? dateA - dateB : dateB - dateA;
+          }
+
+          // Status column - logical order: Pending → Approved → Rejected
+          if (columnIndex === 6) {
+            const order = { 'PENDING': 0, 'APPROVED': 1, 'REJECTED': 2 };
+            const aOrder = order[valA.toUpperCase()] ?? -1;
+            const bOrder = order[valB.toUpperCase()] ?? -1;
+            return ascending ? aOrder - bOrder : bOrder - aOrder;
+          }
+
+          // Natural sort for text
+          return ascending
+            ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' })
+            : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        // Re-append sorted rows and renumber #
+        rows.forEach((row, i) => {
+          tbody.appendChild(row);
+          row.children[0].textContent = i + 1;
+        });
+      }
+    });
+  </script>
 </body>
 </html>
