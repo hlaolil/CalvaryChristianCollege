@@ -77,11 +77,47 @@
       background: #f9f9f9;
     }
 
+    /* Sortable header styles */
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      padding-right: 28px !important;
+    }
+    th.sortable:hover {
+      background: #bbdefb !important;
+    }
+    th.sortable::after {
+      content: "↕";
+      position: absolute;
+      right: 8px;
+      opacity: 0.4;
+      font-size: 0.9em;
+    }
+    th.sortable.asc::after {
+      content: "↑";
+      opacity: 1;
+      font-weight: bold;
+    }
+    th.sortable.desc::after {
+      content: "↓";
+      opacity: 1;
+      font-weight: bold;
+    }
+
     /* Mobile: Stack table rows */
     @media (max-width: 640px) {
-      .table-wrapper { overflow-x: hidden; }
-      table, thead, tbody, th, td, tr { display: block; }
-      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      .table-wrapper {
+        overflow-x: hidden;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
       tr {
         margin-bottom: 1.2rem;
         border: 1px solid #ddd;
@@ -122,8 +158,14 @@
     }
 
     /* Success / Error */
-    .success { color: green; font-weight: bold; }
-    .error { color: red; font-weight: bold; }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
 
     /* Back link */
     main a {
@@ -139,9 +181,11 @@
   <%- include('partials/header') %>
   <main class="container">
     <h1>Contact Us</h1>
+
     <% if (success) { %>
       <p class="success">Thank you! Your message has been sent.</p>
     <% } %>
+
     <% if (error) { %>
       <p class="error"><%= error %></p>
     <% } %>
@@ -171,16 +215,17 @@
       <!-- === ALL USERS === -->
       <hr>
       <h2>All Registered Users</h2>
+
       <% if (users && users.length > 0) { %>
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Joined</th>
+                <th class="sortable">Name</th>
+                <th class="sortable">Email</th>
+                <th class="sortable">Role</th>
+                <th class="sortable">Joined</th>
               </tr>
             </thead>
             <tbody>
@@ -209,17 +254,18 @@
       <!-- === ALL CONTACT MESSAGES === -->
       <hr>
       <h2>All Contact Form Submissions</h2>
+
       <% if (contacts && contacts.length > 0) { %>
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Message</th>
-                <th>Submitted</th>
+                <th class="sortable">Name</th>
+                <th class="sortable">Email</th>
+                <th class="sortable">Phone</th>
+                <th class="sortable">Message</th>
+                <th class="sortable">Submitted</th>
               </tr>
             </thead>
             <tbody>
@@ -244,6 +290,71 @@
 
     <% } %>
   </main>
+
   <%- include('partials/footer') %>
+
+  <!-- Client-side table sorting script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".table-wrapper table").forEach(table => {
+        const thead = table.querySelector("thead");
+        if (!thead) return;
+
+        const headers = thead.querySelectorAll("th.sortable");
+        headers.forEach(header => {
+          header.addEventListener("click", () => {
+            const index = Array.from(header.parentNode.children).indexOf(header);
+            const isAsc = header.classList.toggle("asc");
+            if (!isAsc) header.classList.add("desc");
+            else header.classList.remove("desc");
+
+            // Reset other headers
+            headers.forEach(h => {
+              if (h !== header) {
+                h.classList.remove("asc", "desc");
+              }
+            });
+
+            sortTable(table, index, isAsc);
+          });
+        });
+      });
+
+      function sortTable(table, columnIndex, ascending) {
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        rows.sort((a, b) => {
+          const aCell = a.children[columnIndex];
+          const bCell = b.children[columnIndex];
+
+          let aText = aCell.textContent.trim();
+          let bText = bCell.textContent.trim();
+
+          // Detect and sort date columns (format like "18/12/2025, 3:45:12 PM")
+          const datePattern = /\d{1,2}\/\d{1,2}\/\d{4},\s\d{1,2}:\d{2}:\d{2}\s[AP]M/;
+          if (datePattern.test(aText) && datePattern.test(bText)) {
+            const aDate = new Date(aText.replace(/,/g, ""));
+            const bDate = new Date(bText.replace(/,/g, ""));
+            return ascending ? aDate - bDate : bDate - aDate;
+          }
+
+          // Sort role by the text inside the span
+          if (aCell.querySelector("span") && bCell.querySelector("span")) {
+            aText = aCell.querySelector("span").textContent.trim();
+            bText = bCell.querySelector("span").textContent.trim();
+          }
+
+          // Natural alphanumeric sort
+          return ascending
+            ? aText.localeCompare(bText, undefined, { numeric: true, sensitivity: 'base' })
+            : bText.localeCompare(aText, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        // Re-append sorted rows
+        rows.forEach(row => tbody.appendChild(row));
+      }
+    });
+  </script>
 </body>
 </html>
