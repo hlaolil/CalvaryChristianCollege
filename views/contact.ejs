@@ -219,7 +219,7 @@
                   <td data-label="#"> <%= i + 1 %> </td>
                   <td data-label="Name"> <%= u.name || '—' %> </td>
                   <td data-label="Email"> <%= u.email %> </td>
-                  <td data-label="Phone"> <%= u.phone || '—' %> </td> <!-- NEW CELL -->
+                  <td data-label="Phone"> <%= u.phoneNumber || '—' %> </td> <!-- Fixed here -->
                   <td data-label="Role">
                     <span style="padding:3px 8px; border-radius:4px; font-weight:bold; color:white; background:<%= u.role === 'admin' ? '#d32f2f' : '#1976d2' %>">
                       <%= (u.role || 'user').toUpperCase() %>
