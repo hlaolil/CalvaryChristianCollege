@@ -97,7 +97,7 @@ exports.postRegister = async (req, res) => {
     const phoneRegex = /^\+\d{1,3}\s?\d{4,14}$/; // +266 58123456
     if (!phoneRegex.test(phoneNumber.trim())) {
       return res.render('register', {
-        error: 'Invalid phone number. Use format: +266 1234 5678',
+        error: 'Invalid phone number. Use format: +266 58123456',
         title: 'Register',
         roles: validRoles
       });
