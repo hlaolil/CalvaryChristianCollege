@@ -48,7 +48,6 @@
     .contact-form button:hover {
       background: #1565c0;
     }
-
     /* Responsive Tables */
     .table-wrapper {
       overflow-x: auto;
@@ -76,7 +75,6 @@
     tbody tr:hover {
       background: #f9f9f9;
     }
-
     /* Sortable header styles */
     th.sortable {
       cursor: pointer;
@@ -104,7 +102,6 @@
       opacity: 1;
       font-weight: bold;
     }
-
     /* Mobile: Stack table rows */
     @media (max-width: 640px) {
       .table-wrapper {
@@ -148,7 +145,6 @@
         word-wrap: break-word;
       }
     }
-
     /* Message column width on desktop */
     @media (min-width: 641px) {
       td.message-cell {
@@ -156,7 +152,6 @@
         word-wrap: break-word;
       }
     }
-
     /* Success / Error */
     .success {
       color: green;
@@ -166,7 +161,6 @@
       color: red;
       font-weight: bold;
     }
-
     /* Back link */
     main a {
       color: #1976d2;
@@ -181,41 +175,31 @@
   <%- include('partials/header') %>
   <main class="container">
     <h1>Contact Us</h1>
-
     <% if (success) { %>
       <p class="success">Thank you! Your message has been sent.</p>
     <% } %>
-
     <% if (error) { %>
       <p class="error"><%= error %></p>
     <% } %>
-
     <!-- ==================== CONTACT FORM ==================== -->
     <form class="contact-form" action="/contact" method="POST">
       <label>Name *:</label>
       <input type="text" name="name" required value="<%= user?.name || '' %>" <%= user ? 'readonly' : '' %>>
-
       <label>Email *:</label>
       <input type="email" name="email" required value="<%= user?.email || '' %>" <%= user ? 'readonly' : '' %>>
-
       <label>Phone (Optional):</label>
       <input type="tel" name="phone" placeholder="+266 1234 5678">
-
       <label>Message *:</label>
       <textarea name="message" rows="6" required placeholder="How can we help you?"></textarea>
-
       <button type="submit">Send Message</button>
     </form>
-
     <p><a href="/">Back to Home</a></p>
 
     <!-- ==================== ADMIN: USERS + CONTACTS ==================== -->
     <% if (user?.role === 'admin') { %>
-
       <!-- === ALL USERS === -->
       <hr>
       <h2>All Registered Users</h2>
-
       <% if (users && users.length > 0) { %>
         <div class="table-wrapper">
           <table>
@@ -224,6 +208,7 @@
                 <th>#</th>
                 <th class="sortable">Name</th>
                 <th class="sortable">Email</th>
+                <th class="sortable">Phone</th> <!-- NEW COLUMN -->
                 <th class="sortable">Role</th>
                 <th class="sortable">Joined</th>
               </tr>
@@ -234,6 +219,7 @@
                   <td data-label="#"> <%= i + 1 %> </td>
                   <td data-label="Name"> <%= u.name || '—' %> </td>
                   <td data-label="Email"> <%= u.email %> </td>
+                  <td data-label="Phone"> <%= u.phone || '—' %> </td> <!-- NEW CELL -->
                   <td data-label="Role">
                     <span style="padding:3px 8px; border-radius:4px; font-weight:bold; color:white; background:<%= u.role === 'admin' ? '#d32f2f' : '#1976d2' %>">
                       <%= (u.role || 'user').toUpperCase() %>
@@ -254,7 +240,6 @@
       <!-- === ALL CONTACT MESSAGES === -->
       <hr>
       <h2>All Contact Form Submissions</h2>
-
       <% if (contacts && contacts.length > 0) { %>
         <div class="table-wrapper">
           <table>
@@ -287,19 +272,16 @@
       <% } else { %>
         <p><em>No contact messages yet.</em></p>
       <% } %>
-
     <% } %>
   </main>
-
   <%- include('partials/footer') %>
 
-  <!-- Client-side table sorting script -->
+  <!-- Client-side table sorting script (unchanged – works with new column) -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       document.querySelectorAll(".table-wrapper table").forEach(table => {
         const thead = table.querySelector("thead");
         if (!thead) return;
-
         const headers = thead.querySelectorAll("th.sortable");
         headers.forEach(header => {
           header.addEventListener("click", () => {
@@ -307,51 +289,41 @@
             const isAsc = header.classList.toggle("asc");
             if (!isAsc) header.classList.add("desc");
             else header.classList.remove("desc");
-
             // Reset other headers
             headers.forEach(h => {
               if (h !== header) {
                 h.classList.remove("asc", "desc");
               }
             });
-
             sortTable(table, index, isAsc);
           });
         });
       });
-
       function sortTable(table, columnIndex, ascending) {
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.querySelectorAll("tr"));
-
         rows.sort((a, b) => {
           const aCell = a.children[columnIndex];
           const bCell = b.children[columnIndex];
-
           let aText = aCell.textContent.trim();
           let bText = bCell.textContent.trim();
-
-          // Detect and sort date columns (format like "18/12/2025, 3:45:12 PM")
+          // Detect and sort date columns
           const datePattern = /\d{1,2}\/\d{1,2}\/\d{4},\s\d{1,2}:\d{2}:\d{2}\s[AP]M/;
           if (datePattern.test(aText) && datePattern.test(bText)) {
             const aDate = new Date(aText.replace(/,/g, ""));
             const bDate = new Date(bText.replace(/,/g, ""));
             return ascending ? aDate - bDate : bDate - aDate;
           }
-
           // Sort role by the text inside the span
           if (aCell.querySelector("span") && bCell.querySelector("span")) {
             aText = aCell.querySelector("span").textContent.trim();
             bText = bCell.querySelector("span").textContent.trim();
           }
-
           // Natural alphanumeric sort
           return ascending
             ? aText.localeCompare(bText, undefined, { numeric: true, sensitivity: 'base' })
             : bText.localeCompare(aText, undefined, { numeric: true, sensitivity: 'base' });
         });
-
-        // Re-append sorted rows
         rows.forEach(row => tbody.appendChild(row));
       }
     });
