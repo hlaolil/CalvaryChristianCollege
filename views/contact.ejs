@@ -221,7 +221,7 @@
                   <td data-label="Email"> <%= u.email %> </td>
                   <td data-label="Phone"> <%= u.phoneNumber || '—' %> </td> <!-- Fixed here -->
                   <td data-label="Role">
-                    <span style="padding:3px 8px; border-radius:4px; font-weight:bold; color:white; background:<%= u.role === 'admin' ? '#d32f2f' : '#1976d2' %>">
+                    <span class="badge <%= u.role === 'admin' ? 'badge-admin' : '' %>">
                       <%= (u.role || 'user').toUpperCase() %>
                     </span>
                   </td>

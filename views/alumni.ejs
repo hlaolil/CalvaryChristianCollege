@@ -90,7 +90,25 @@
     <% if (success) { %><p class="success">Registration submitted successfully!</p><% } %>
     <% if (error)   { %><p class="error"><%= error %></p><% } %>
 
-    <% if (user) { %>
+    <!-- Role guard -->
+    <% if (user.role === 'applicant') { %>
+      <div class="info">This page is for alumni. If you'd like to apply to study, visit the <a href="/apply">Application Form</a>.</div>
+    <% } else if (user.role === 'student') { %>
+      <div class="info">This page is for alumni. Visit your <a href="/student-portal">Student Portal</a>.</div>
+    <% } %>
+
+    <% if (user.role === 'alumni' || user.role === 'admin') { %>
+
+    <% if (user.role === 'alumni' && existingAlumni) { %>
+      <!-- Already registered — show summary card -->
+      <div class="profile-card" style="margin:1.5rem 0;">
+        <h2 style="margin-top:0;">Your Alumni Registration</h2>
+        <p><strong>Church:</strong> <%= existingAlumni.current_church_name %>, <%= existingAlumni.current_church_city %></p>
+        <p><strong>Graduation Year:</strong> <%= existingAlumni.grad_year %></p>
+        <p><strong>Submitted:</strong> <%= new Date(existingAlumni.submittedAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %></p>
+        <p class="success">Your alumni registration has been received. Thank you!</p>
+      </div>
+    <% } else if (user.role === 'alumni' || user.role === 'admin') { %>
       <form class="alumni-form" action="/alumni" method="POST" novalidate>
         <h2>Personal Information</h2>
 
@@ -189,11 +207,10 @@
         <p><strong>Annual Subscription Fee: TBD</strong></p>
         <button type="submit">Submit Registration</button>
       </form>
+    <% } %> <!-- end alumni form / existingAlumni block -->
 
       <p><a href="/">Back to Home</a></p>
-    <% } else { %>
-      <p>You must be logged in to register. <a href="/auth/login">Login here</a></p>
-    <% } %>
+    <% } %> <!-- end alumni || admin block -->
 
     <!-- ==================== ADMIN VIEW ==================== -->
     <% if (user && user.role === 'admin') { %>

@@ -1,12 +1,15 @@
 // authController.js
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const db = require('../db/connect');
+const { sendPasswordResetEmail } = require('../utils/mailer');
 
 // GET /auth/login
 exports.getLogin = (req, res) => {
   res.render('login', {
     error: null,
-    title: 'Login'
+    title: 'Login',
+    query: req.query,
   });
 };
 
@@ -21,7 +24,7 @@ exports.postLogin = async (req, res) => {
         title: 'Login'
       });
     }
-    req.session.user = { id: user._id, name: user.name, email: user.email, role: user.role };
+    req.session.user = { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
     res.redirect('/');
   } catch (err) {
     console.error(err);
@@ -156,13 +159,13 @@ exports.postRegister = async (req, res) => {
 
     // === 9. Auto-login ===
     req.session.user = {
-      id: result.insertedId,
+      id: result.insertedId.toString(),
       name: userData.name,
       email: userData.email,
       role: userData.role,
       phoneNumber: userData.phoneNumber,
-      studentNumber: userData.studentNumber || null,        // ← NEW
-      programOfStudy: userData.programOfStudy || null      // ← NEW
+      studentNumber: userData.studentNumber || null,
+      programOfStudy: userData.programOfStudy || null
     }
     res.redirect('/');
 
@@ -186,4 +189,112 @@ exports.logout = (req, res) => {
     res.clearCookie('connect.sid');
     res.redirect('/auth/login');
   });
+};
+
+// GET /auth/forgot-password
+exports.getForgotPassword = (req, res) => {
+  res.render('forgot-password', { error: null, success: null, title: 'Forgot Password' });
+};
+
+// POST /auth/forgot-password
+exports.postForgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const render = (error, success) =>
+    res.render('forgot-password', { error, success, title: 'Forgot Password' });
+
+  if (!email?.trim()) {
+    return render('Please enter your email address.', null);
+  }
+
+  try {
+    const user = await db.getDb().collection('users').findOne({ email: email.toLowerCase().trim() });
+
+    // Always show the same message to prevent email enumeration
+    const successMsg = 'If an account with that email exists, a reset link has been sent.';
+
+    if (!user) {
+      return render(null, successMsg);
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await db.getDb().collection('users').updateOne(
+      { _id: user._id },
+      { $set: { resetToken: token, resetTokenExpiry: expiry } }
+    );
+
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+    const resetLink = `${baseUrl}/auth/reset-password/${token}`;
+
+    await sendPasswordResetEmail(user.email, resetLink);
+
+    render(null, successMsg);
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    render('Server error. Please try again.', null);
+  }
+};
+
+// GET /auth/reset-password/:token
+exports.getResetPassword = async (req, res) => {
+  const { token } = req.params;
+  try {
+    const user = await db.getDb().collection('users').findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.render('reset-password', {
+        error: 'This reset link is invalid or has expired.',
+        token: null,
+        title: 'Reset Password',
+      });
+    }
+
+    res.render('reset-password', { error: null, token, title: 'Reset Password' });
+  } catch (err) {
+    console.error('Reset password GET error:', err);
+    res.render('reset-password', { error: 'Server error. Please try again.', token: null, title: 'Reset Password' });
+  }
+};
+
+// POST /auth/reset-password/:token
+exports.postResetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password, confirmPassword } = req.body;
+
+  const renderError = (msg) =>
+    res.render('reset-password', { error: msg, token, title: 'Reset Password' });
+
+  if (!password || password.length < 6) {
+    return renderError('Password must be at least 6 characters.');
+  }
+  if (password !== confirmPassword) {
+    return renderError('Passwords do not match.');
+  }
+
+  try {
+    const user = await db.getDb().collection('users').findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return renderError('This reset link is invalid or has expired.');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await db.getDb().collection('users').updateOne(
+      { _id: user._id },
+      { $set: { password: hashedPassword }, $unset: { resetToken: '', resetTokenExpiry: '' } }
+    );
+
+    res.redirect('/auth/login?reset=success');
+  } catch (err) {
+    console.error('Reset password POST error:', err);
+    renderError('Server error. Please try again.');
+  }
 };

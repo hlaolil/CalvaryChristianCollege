@@ -105,30 +105,30 @@
     <% } %>
 
     <!-- ==================== CURRENT STUDENT PROFILE ==================== -->
-    <div class="card" style="padding:1.5rem; margin:1.5rem 0; border:1px solid #ddd; border-radius:8px; background:#f9f9f9;">
+    <div class="profile-card">
       <h2>Welcome, <%= user.name %>!</h2>
-      <p><strong>Student Number:</strong> <code style="font-size:1.1em;"><%= user.studentNumber || '—' %></code></p>
+      <p><strong>Student Number:</strong> <code style="font-size:1.05em; background:#f0f4fa; padding:2px 6px; border-radius:4px;"><%= user.studentNumber || '—' %></code></p>
       <p><strong>Email:</strong> <%= user.email %></p>
-      <p><strong>Role:</strong> <span class="badge" style="background:#1976d2; color:white; padding:3px 8px; border-radius:4px;"><%= user.role.toUpperCase() %></span></p>
+      <p><strong>Role:</strong> <span class="badge <%= user.role === 'admin' ? 'badge-admin' : '' %>"><%= user.role.toUpperCase() %></span></p>
       <p><strong>Joined:</strong> <%= user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—' %></p>
 
       <% if (studentApp) { %>
-        <hr>
-        <h3>Application Status</h3>
+        <hr style="margin:1rem 0; border:none; border-top:1px solid #eee;">
+        <h3 style="margin-top:0;">Application Status</h3>
         <p><strong>Program:</strong> <%= studentApp.program %></p>
         <p><strong>Semester:</strong> <%= studentApp.semester %></p>
         <p><strong>Status:</strong>
-          <span style="color: <%= studentApp.status === 'Approved' ? 'green' : studentApp.status === 'Rejected' ? 'red' : 'orange' %>; font-weight:bold;">
+          <span class="status-badge status-<%= (studentApp.status || 'pending').toLowerCase() %>">
             <%= studentApp.status || 'Pending' %>
           </span>
         </p>
-        <p><strong>Submitted:</strong> <%= new Date(studentApp.submittedAt).toLocaleString() %></p>
+        <p><strong>Submitted:</strong> <%= new Date(studentApp.submittedAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %></p>
         <% if (studentApp.status === 'Approved') { %>
           <p class="success">You are officially enrolled!</p>
         <% } else if (studentApp.status === 'Rejected') { %>
-          <p class="error">Application declined. Contact admin.</p>
+          <p class="error">Application declined. Please contact admin.</p>
         <% } else { %>
-          <p class="info">Application under review.</p>
+          <p class="info">Your application is under review.</p>
         <% } %>
       <% } else if (user.role === 'student') { %>
         <p class="warning">No application found. <a href="/apply">Apply Now</a></p>
@@ -164,7 +164,7 @@
                   <td data-label="Phone"> <%= s.phoneNumber || '—' %> </td>
                   <td data-label="Program"> <%= s.programOfStudy || '—' %> </td>
                   <td data-label="App Status">
-                    <span style="color: <%= s.application.status === 'Approved' ? 'green' : s.application.status === 'Rejected' ? 'red' : 'orange' %>; font-weight:bold;">
+                    <span class="status-badge status-<%= (s.application.status || 'pending').toLowerCase() %>">
                       <%= s.application.status || 'Pending' %>
                     </span>
                   </td>

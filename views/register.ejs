@@ -4,127 +4,115 @@
 <body>
   <%- include('partials/header') %>
   <main>
-    <h1>Register</h1>
-
     <% if (user) { %>
-      <p>You're already logged in as <%= user.name %>. 
-        <a href="/academics">Go to Dashboard</a> | 
-        <a href="/auth/logout">Logout</a>
-      </p>
+      <div class="auth-container">
+        <h1>Already Logged In</h1>
+        <p style="text-align:center;">You're logged in as <strong><%= user.name %></strong></p>
+        <a href="/academics" class="btn-primary" style="display:block;text-align:center;margin-top:1rem;">Go to Dashboard</a>
+        <p style="text-align:center;margin-top:1rem;"><a href="/auth/logout">Logout</a></p>
+      </div>
     <% } else { %>
 
-      <% if (error) { %><p class="error"><%= error %></p><% } %>
+      <div class="auth-container" style="max-width:560px;">
+        <h1>Create Account</h1>
 
-      <form action="/auth/register" method="POST" novalidate>
-        <!-- ==== COMMON FIELDS ==== -->
-        <label>Name:</label>
-        <input type="text" name="name" required autocomplete="name"><br>
+        <% if (error) { %><p class="error"><%= error %></p><% } %>
 
-        <label>Email:</label>
-        <input type="email" name="email" required autocomplete="email"><br>
+        <form class="auth-form" action="/auth/register" method="POST" novalidate>
 
-        <label>Phone Number:</label>
-        <input type="tel" name="phoneNumber" placeholder="+266 1234 5678"
-               required autocomplete="tel"><br>
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required autocomplete="name" placeholder="John Doe">
+          </div>
 
-        <label>Password:</label>
-        <input type="password" name="password" required autocomplete="new-password"><br>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com">
+          </div>
 
-        <label>Role:</label>
-        <select name="role" id="role" required>
-          <% roles.forEach(r => { %>
-            <option value="<%= r %>"><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
-          <% }) %>
-        </select><br>
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" id="phoneNumber" name="phoneNumber" required autocomplete="tel" placeholder="+266 1234 5678">
+          </div>
 
-        <!-- ==== ADMIN ONLY ==== -->
-        <div id="admin-secret" class="conditional" style="display:none;">
-          <label>Admin Secret Key:</label>
-          <input type="text" name="adminSecret" autocomplete="off"><br>
-        </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="At least 6 characters">
+          </div>
 
-        <!-- ==== STUDENT ONLY ==== -->
-        <div id="student-fields" class="conditional" style="display:none;">
-          <label>Student Number:</label>
-          <input type="text" name="studentNumber" maxlength="6" required><br>
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role" name="role" required>
+              <% roles.forEach(r => { %>
+                <option value="<%= r %>"><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
+              <% }) %>
+            </select>
+          </div>
 
-          <label>Program of Study:</label>
-          <select name="programOfStudy" required>
-            <option value="">-- Select Program --</option>
+          <!-- ADMIN ONLY -->
+          <div id="admin-secret" style="display:none;">
+            <div class="form-group">
+              <label for="adminSecret">Admin Secret Key</label>
+              <input type="password" id="adminSecret" name="adminSecret" autocomplete="off" placeholder="Enter admin secret">
+            </div>
+          </div>
 
-            <!-- LEVEL 1 -->
-            <optgroup label="Level 1 Programs">
-              <option value="Level 1 Certificate in Christian Discipleship">
-                Level 1 Certificate in Christian Discipleship
-              </option>
-            </optgroup>
+          <!-- STUDENT ONLY -->
+          <div id="student-fields" style="display:none;">
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label for="studentNumber">Student Number</label>
+              <input type="text" id="studentNumber" name="studentNumber" maxlength="6"
+                     placeholder="6 alphanumeric characters (e.g. AB1234)" style="text-transform:uppercase;">
+            </div>
+            <div class="form-group">
+              <label for="programOfStudy">Program of Study</label>
+              <select id="programOfStudy" name="programOfStudy">
+                <option value="">-- Select Program --</option>
+                <optgroup label="Level 1 Programs">
+                  <option value="Level 1 Certificate in Christian Discipleship">Level 1 Certificate in Christian Discipleship</option>
+                </optgroup>
+                <optgroup label="Level 2 Programs">
+                  <option value="Level 2 Diploma in Christian Leadership">Level 2 Diploma in Christian Leadership</option>
+                  <option value="Level 2 Certificate in Theology" disabled>Level 2 Certificate in Theology (Coming Soon)</option>
+                  <option value="Level 2 Certificate in Biblical Studies" disabled>Level 2 Certificate in Biblical Studies (Coming Soon)</option>
+                </optgroup>
+                <optgroup label="Level 3 Programs">
+                  <option value="Level 3 Advanced Diploma in Ministry">Level 3 Advanced Diploma in Ministry</option>
+                  <option value="Level 3 Diploma in Theology" disabled>Level 3 Diploma in Theology (Coming Soon)</option>
+                  <option value="Level 3 Diploma in Biblical Studies" disabled>Level 3 Diploma in Biblical Studies (Coming Soon)</option>
+                  <option value="Level 3 Diploma in Business Leadership" disabled>Level 3 Diploma in Business Leadership (Coming Soon)</option>
+                </optgroup>
+                <optgroup label="Level 4 Programs">
+                  <option value="Level 4 Higher Diploma in Shepherding">Level 4 Higher Diploma in Shepherding</option>
+                </optgroup>
+                <optgroup label="Level 5 Programs">
+                  <option value="Level 5 Bachelor of Ministry">Level 5 Bachelor of Ministry</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
 
-            <!-- LEVEL 2 -->
-            <optgroup label="Level 2 Programs">
-              <option value="Level 2 Diploma in Christian Leadership">
-                Level 2 Diploma in Christian Leadership
-              </option>
-              <option value="Level 2 Certificate in Theology" disabled>
-                Level 2 Certificate in Theology (Coming Soon)
-              </option>
-              <option value="Level 2 Certificate in Biblical Studies" disabled>
-                Level 2 Certificate in Biblical Studies (Coming Soon)
-              </option>
-            </optgroup>
+          <button type="submit">Create Account</button>
+          <p>Already have an account? <a href="/auth/login">Login here</a></p>
+        </form>
+      </div>
 
-            <!-- LEVEL 3 -->
-            <optgroup label="Level 3 Programs">
-              <option value="Level 3 Advanced Diploma in Ministry">
-                Level 3 Advanced Diploma in Ministry
-              </option>
-              <option value="Level 3 Diploma in Theology" disabled>
-                Level 3 Diploma in Theology (Coming Soon)
-              </option>
-              <option value="Level 3 Diploma in Biblical Studies" disabled>
-                Level 3 Diploma in Biblical Studies (Coming Soon)
-              </option>
-              <option value="Level 3 Diploma in Business Leadership" disabled>
-                Level 3 Diploma in Business Leadership (Coming Soon)
-              </option>
-            </optgroup>
-
-            <!-- LEVEL 4 -->
-            <optgroup label="Level 4 Programs">
-              <option value="Level 4 Higher Diploma in Shepherding">
-                Level 4 Higher Diploma in Shepherding
-              </option>
-            </optgroup>
-
-            <!-- LEVEL 5 -->
-            <optgroup label="Level 5 Programs">
-              <option value="Level 5 Bachelor of Ministry">
-                Level 5 Bachelor of Ministry
-              </option>
-            </optgroup>
-          </select><br>
-        </div>
-
-        <button type="submit">Register</button>
-      </form>
-
-      <p>Already have an account? <a href="/auth/login">Login here</a></p>
     <% } %>
   </main>
 
   <%- include('partials/footer') %>
 
   <script>
-    const roleSelect      = document.getElementById('role');
-    const adminSecretDiv  = document.getElementById('admin-secret');
-    const studentDiv      = document.getElementById('student-fields');
+    const roleSelect     = document.getElementById('role');
+    const adminSecretDiv = document.getElementById('admin-secret');
+    const studentDiv     = document.getElementById('student-fields');
 
     function toggleFields() {
       const role = roleSelect.value;
-      adminSecretDiv.style.display  = (role === 'admin')   ? 'block' : 'none';
-      studentDiv.style.display      = (role === 'student') ? 'block' : 'none';
+      adminSecretDiv.style.display = role === 'admin'   ? 'block' : 'none';
+      studentDiv.style.display     = role === 'student' ? 'block' : 'none';
     }
 
-    // Run on change and on initial load (in case the page is re-rendered with a value)
     roleSelect.addEventListener('change', toggleFields);
     toggleFields();
   </script>

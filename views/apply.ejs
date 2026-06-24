@@ -12,6 +12,25 @@
       --light: #f9f9f9;
       --border: #ddd;
     }
+    /* Action buttons */
+    .action-btn {
+      padding: 4px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+      white-space: nowrap;
+    }
+    .approve-btn  { background: #2e7d32; }
+    .approve-btn:hover:not(:disabled)  { background: #1b5e20; }
+    .reject-btn   { background: #d32f2f; }
+    .reject-btn:hover:not(:disabled)   { background: #b71c1c; }
+    .pending-btn  { background: #f57c00; }
+    .pending-btn:hover:not(:disabled)  { background: #e65100; }
+    .action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .action-btns  { display: flex; gap: 4px; flex-wrap: wrap; }
     /* Form Styling */
     .application-form {
       max-width: 100%;
@@ -209,8 +228,37 @@
     <% if (success) { %><p class="success">Application submitted successfully!</p><% } %>
     <% if (error) { %><p class="error"><%= error %></p><% } %>
 
+    <!-- ==================== ACCESS CONTROL ==================== -->
+    <% if (user.role === 'student') { %>
+      <div class="info">You are enrolled as a student. Visit your <a href="/student-portal">Student Portal</a> to view your status.</div>
+    <% } else if (user.role === 'alumni') { %>
+      <div class="info">As an alumni, please visit the <a href="/alumni">Alumni Registration</a> page instead.</div>
+    <% } %>
+
     <!-- ==================== USER FORM ==================== -->
-    <% if (user) { %>
+    <% if (user.role === 'applicant' || user.role === 'admin') { %>
+
+    <% if (user.role === 'applicant' && existingApplication) { %>
+      <!-- Already applied — show status card -->
+      <div class="profile-card" style="margin:1.5rem 0;">
+        <h2 style="margin-top:0;">Your Application</h2>
+        <p><strong>Program:</strong> <%= existingApplication.program %></p>
+        <p><strong>Semester:</strong> <%= existingApplication.semester %></p>
+        <p><strong>Status:</strong>
+          <span class="status-badge status-<%= (existingApplication.status || 'pending').toLowerCase() %>">
+            <%= existingApplication.status || 'Pending' %>
+          </span>
+        </p>
+        <p><strong>Submitted:</strong> <%= new Date(existingApplication.submittedAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %></p>
+        <% if (existingApplication.status === 'Approved') { %>
+          <p class="success">Your application has been approved! Contact the college for next steps.</p>
+        <% } else if (existingApplication.status === 'Rejected') { %>
+          <p class="error">Your application was not approved. Please contact the admin for more information.</p>
+        <% } else { %>
+          <p class="info">Your application is under review. We will be in touch soon.</p>
+        <% } %>
+      </div>
+    <% } else if (user.role === 'applicant' || user.role === 'admin') { %>
       <form class="application-form" action="/apply" method="POST" novalidate>
         <% if (typeof csrfToken !== 'undefined') { %>
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -373,6 +421,8 @@
           <button type="submit">Submit Application</button>
         </div>
       </form>
+    <% } %> <!-- end applicant form / existingApplication block -->
+
       <p><a href="/">Back to Home</a></p>
 
       <!-- ==================== ADMIN: ALL APPLICATIONS TABLE ==================== -->
@@ -393,6 +443,7 @@
                     <th class="sortable">Semester</th>
                     <th class="sortable">Status</th>
                     <th class="sortable">Submitted</th>
+                    <th>Actions</th>
                     <th>Details</th>
                   </tr>
                 </thead>
@@ -412,6 +463,18 @@
                       </td>
                       <td data-label="Submitted">
                         <%= new Date(app.submittedAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %>
+                      </td>
+                      <td data-label="Actions" class="details-cell">
+                        <form action="/apply/<%= app._id %>/status" method="POST">
+                          <div class="action-btns">
+                            <button type="submit" name="status" value="Approved" class="action-btn approve-btn"
+                              <%= (app.status||'pending').toLowerCase() === 'approved' ? 'disabled' : '' %>>Approve</button>
+                            <button type="submit" name="status" value="Rejected" class="action-btn reject-btn"
+                              <%= (app.status||'pending').toLowerCase() === 'rejected' ? 'disabled' : '' %>>Reject</button>
+                            <button type="submit" name="status" value="Pending" class="action-btn pending-btn"
+                              <%= (app.status||'pending').toLowerCase() === 'pending' ? 'disabled' : '' %>>Pending</button>
+                          </div>
+                        </form>
                       </td>
                       <td data-label="Details" class="details-cell">
                         <details>
@@ -437,9 +500,7 @@
         </div>
       <% } %>
 
-    <% } else { %>
-      <p>You must be logged in to apply. <a href="/auth/login">Login here</a></p>
-    <% } %>
+    <% } %> <!-- end applicant || admin block -->
   </main>
 
   <%- include('partials/footer') %>

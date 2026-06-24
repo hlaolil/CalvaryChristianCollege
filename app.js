@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const morgan = require('morgan');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const { connectDB } = require('./db/connect');
 const { ensureAuth } = require('./middleware/auth');
 
@@ -27,6 +28,17 @@ app.use(
     secret: process.env.SESSION_SECRET || 'mysecretkey',
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      dbName: process.env.DB_NAME,
+      ttl: 14 * 24 * 60 * 60, // 14 days
+      touchAfter: 24 * 3600,   // re-save at most once per day
+    }),
+    cookie: {
+      maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in ms
+      httpOnly: true,
+      sameSite: 'lax',
+    },
   })
 );
 

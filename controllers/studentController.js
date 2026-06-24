@@ -1,6 +1,5 @@
 // controllers/studentController.js
 const db = require('../db/connect');
-const { ObjectId } = require('mongodb');
 
 exports.getStudentPortal = async (req, res) => {
   const user = req.session.user;
@@ -12,7 +11,7 @@ exports.getStudentPortal = async (req, res) => {
     if (user.role === 'student' || user.role === 'admin') {
       studentApp = await db.getDb()
         .collection('applications')
-        .findOne({ userId: new ObjectId(user.id) });
+        .findOne({ userId: user.id });
     }
 
     // === 2. Admin: Get ALL students with phone & program ===
@@ -43,7 +42,7 @@ exports.getStudentPortal = async (req, res) => {
         students.map(async (s) => {
           const app = await db.getDb()
             .collection('applications')
-            .findOne({ userId: new ObjectId(s._id) });
+            .findOne({ userId: s._id.toString() });
           return {
             ...s,
             application: app || { status: 'No Application', program: '—', semester: '—' }
