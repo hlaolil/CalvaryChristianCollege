@@ -3,189 +3,174 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const db = require('../db/connect');
 const { sendPasswordResetEmail } = require('../utils/mailer');
+const { str, isValidPhone, isValidEmail, safeRedirect } = require('../utils/validate');
+const { programsByLevel, isAvailableProgram } = require('../utils/programs');
+const { tokensMatch } = require('../middleware/csrf');
+const { homeFor, toSessionUser } = require('../middleware/auth');
+
+const ROLES = ['applicant', 'student', 'alumni', 'admin'];
+const MIN_PASSWORD_LENGTH = 8;
+
+// Reset tokens are stored hashed, so a database leak does not expose live reset links
+function hashToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+// Starts a fresh session for `userDoc` (prevents session fixation) and
+// resolves with the page the user was trying to reach, if any.
+function startSession(req, userDoc) {
+  const returnTo = req.session.returnTo;
+  return new Promise((resolve, reject) => {
+    req.session.regenerate(err => {
+      if (err) return reject(err);
+      req.session.user = toSessionUser(userDoc);
+      req.session.save(saveErr => (saveErr ? reject(saveErr) : resolve(returnTo)));
+    });
+  });
+}
 
 // GET /auth/login
 exports.getLogin = (req, res) => {
   res.render('login', {
     error: null,
     title: 'Login',
-    query: req.query,
+    resetSuccess: req.query.reset === 'success',
+    form: {}
   });
 };
 
 // POST /auth/login
-exports.postLogin = async (req, res) => {
-  const { email, password } = req.body;
+exports.postLogin = async (req, res, next) => {
+  const email = str(req.body.email).toLowerCase();
+  const password = typeof req.body.password === 'string' ? req.body.password : '';
+
+  const renderError = (status, error) =>
+    res.status(status).render('login', { error, title: 'Login', resetSuccess: false, form: { email } });
+
   try {
-    const user = await db.getDb().collection('users').findOne({ email });
+    const user = email && password
+      ? await db.getDb().collection('users').findOne({ email })
+      : null;
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.render('login', {
-        error: 'Invalid email or password',
-        title: 'Login'
-      });
+      return renderError(401, 'Invalid email or password');
     }
-    req.session.user = { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
-    res.redirect('/');
+    const returnTo = await startSession(req, user);
+    res.redirect(safeRedirect(returnTo, homeFor(user)));
   } catch (err) {
-    console.error(err);
-    res.render('login', {
-      error: 'Server error. Please try again.',
-      title: 'Login'
-    });
+    next(err);
   }
 };
+
+function renderRegister(res, { error = null, form = {}, status = 200 } = {}) {
+  res.status(status).render('register', {
+    error,
+    title: 'Register',
+    roles: ROLES,
+    programGroups: programsByLevel(),
+    form
+  });
+}
 
 // GET /auth/register
 exports.getRegister = (req, res) => {
-  res.render('register', {
-    error: null,
-    title: 'Register',
-    roles: ['applicant', 'student', 'alumni', 'admin']
-  });
+  const role = str(req.query.role);
+  renderRegister(res, { form: { role: ROLES.includes(role) ? role : 'applicant' } });
 };
 
 // POST /auth/register
-exports.postRegister = async (req, res) => {
-  const {
-    name,
-    email,
-    password,
-    phoneNumber,
-    role,
-    adminSecret,        // <-- only used for admin
-    studentNumber,
-    programOfStudy
-  } = req.body;
+exports.postRegister = async (req, res, next) => {
+  const name = str(req.body.name);
+  const email = str(req.body.email).toLowerCase();
+  const password = typeof req.body.password === 'string' ? req.body.password : '';
+  const phoneNumber = str(req.body.phoneNumber);
+  const role = str(req.body.role);
+  const adminSecret = str(req.body.adminSecret);
+  const studentNumber = str(req.body.studentNumber).toUpperCase();
+  const programOfStudy = str(req.body.programOfStudy);
 
-  const validRoles = ['applicant', 'student', 'alumni', 'admin'];
-  const validPrograms = [
-  "Level 1 Certificate in Christian Discipleship",
-  "Level 2 Diploma in Christian Leadership",
-  "Level 3 Advanced Diploma in Ministry",
-  "Level 4 Higher Diploma in Shepherding",
-  "Level 5 Bachelor of Ministry"
-];
+  // Echoed back into the form on errors (never the password or admin key)
+  const form = { name, email, phoneNumber, role, studentNumber, programOfStudy };
+  const fail = (error) => renderRegister(res, { error, form, status: 400 });
 
   try {
     // === 1. Required Fields for ALL users ===
-    if (!name?.trim() || !email?.trim() || !password || !phoneNumber?.trim() || !role) {
-      return res.render('register', {
-        error: 'Please fill in all required fields.',
-        title: 'Register',
-        roles: validRoles
-      });
+    if (!name || !email || !password || !phoneNumber || !role) {
+      return fail('Please fill in all required fields.');
+    }
+    if (!ROLES.includes(role)) {
+      return fail('Invalid role selected.');
+    }
+    if (!isValidEmail(email)) {
+      return fail('Please enter a valid email address.');
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      return fail(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
     }
 
-    if (!validRoles.includes(role)) {
-      return res.render('register', {
-        error: 'Invalid role selected.',
-        title: 'Register',
-        roles: validRoles
-      });
+    // === 2. Phone number format (international) ===
+    if (!isValidPhone(phoneNumber)) {
+      return fail('Invalid phone number. Use the international format, e.g. +266 5812 3456');
     }
 
-    // === 2. Email uniqueness ===
-    const existingUser = await db.getDb()
-      .collection('users')
-      .findOne({ email: email.toLowerCase().trim() });
-    if (existingUser) {
-      return res.render('register', {
-        error: 'This email is already registered.',
-        title: 'Register',
-        roles: validRoles
-      });
-    }
-
-    // === 3. Phone number format (international) ===
-    const phoneRegex = /^\+\d{1,3}\s?\d{4,14}$/; // +266 58123456
-    if (!phoneRegex.test(phoneNumber.trim())) {
-      return res.render('register', {
-        error: 'Invalid phone number. Use format: +266 58123456',
-        title: 'Register',
-        roles: validRoles
-      });
-    }
-
-    // === 4. ADMIN-ONLY: Secret Key Validation ===
+    // === 3. ADMIN-ONLY: Secret Key Validation ===
     if (role === 'admin') {
-      if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET_KEY) {
-        return res.render('register', {
-          error: 'Invalid admin secret key.',
-          title: 'Register',
-          roles: validRoles
-        });
+      const expected = process.env.ADMIN_SECRET_KEY;
+      if (!expected || !tokensMatch(adminSecret, expected)) {
+        return fail('Invalid admin secret key.');
       }
     }
-    // For non-admins: adminSecret is ignored completely
 
-    // === 5. STUDENT-ONLY: Student Number + Program ===
+    // === 4. STUDENT-ONLY: Student Number + Program ===
     if (role === 'student') {
-      if (!studentNumber || !/^[A-Z0-9]{6}$/.test(studentNumber)) {
-        return res.render('register', {
-          error: 'Student number must be exactly 6 alphanumeric characters.',
-          title: 'Register',
-          roles: validRoles
-        });
+      if (!/^[A-Z0-9]{6}$/.test(studentNumber)) {
+        return fail('Student number must be exactly 6 letters or digits.');
       }
-      if (!programOfStudy || !validPrograms.includes(programOfStudy)) {
-        return res.render('register', {
-          error: 'Please select a valid program of study.',
-          title: 'Register',
-          roles: validRoles
-        });
+      if (!isAvailableProgram(programOfStudy)) {
+        return fail('Please select a valid program of study.');
       }
     }
 
-    // === 6. Hash password ===
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // === 5. Email uniqueness ===
+    const users = db.getDb().collection('users');
+    if (await users.findOne({ email })) {
+      return fail('This email is already registered.');
+    }
 
-    // === 7. Build user document ===
+    // === 6. Build user document ===
     const userData = {
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      password: hashedPassword,
-      phoneNumber: phoneNumber.trim(),
+      name,
+      email,
+      password: await bcrypt.hash(password, 10),
+      phoneNumber,
       role,
       createdAt: new Date()
     };
-
     if (role === 'student') {
-      userData.studentNumber = studentNumber.toUpperCase();
+      userData.studentNumber = studentNumber;
       userData.programOfStudy = programOfStudy;
     }
 
-    // === 8. Insert into DB ===
-    const result = await db.getDb().collection('users').insertOne(userData);
-
-    // === 9. Auto-login ===
-    req.session.user = {
-      id: result.insertedId.toString(),
-      name: userData.name,
-      email: userData.email,
-      role: userData.role,
-      phoneNumber: userData.phoneNumber,
-      studentNumber: userData.studentNumber || null,
-      programOfStudy: userData.programOfStudy || null
+    // === 7. Insert (the unique index catches a simultaneous duplicate) ===
+    let result;
+    try {
+      result = await users.insertOne(userData);
+    } catch (err) {
+      if (err.code === 11000) return fail('This email is already registered.');
+      throw err;
     }
-    res.redirect('/');
 
+    // === 8. Auto-login ===
+    const returnTo = await startSession(req, { ...userData, _id: result.insertedId });
+    res.redirect(safeRedirect(returnTo, homeFor(userData)));
   } catch (err) {
-    console.error('Registration error:', err);
-    res.render('register', {
-      error: 'Server error. Please try again later.',
-      title: 'Register',
-      roles: validRoles
-    });
+    next(err);
   }
 };
 
-// GET /auth/logout
-exports.logout = (req, res) => {
+// POST /auth/logout
+exports.logout = (req, res, next) => {
   req.session.destroy(err => {
-    if (err) {
-      console.error(err);
-      return res.redirect('/');
-    }
+    if (err) return next(err);
     res.clearCookie('connect.sid');
     res.redirect('/auth/login');
   });
@@ -197,21 +182,20 @@ exports.getForgotPassword = (req, res) => {
 };
 
 // POST /auth/forgot-password
-exports.postForgotPassword = async (req, res) => {
-  const { email } = req.body;
+exports.postForgotPassword = async (req, res, next) => {
+  const email = str(req.body.email).toLowerCase();
   const render = (error, success) =>
     res.render('forgot-password', { error, success, title: 'Forgot Password' });
 
-  if (!email?.trim()) {
+  if (!email) {
     return render('Please enter your email address.', null);
   }
 
+  // Always show the same message to prevent email enumeration
+  const successMsg = 'If an account with that email exists, a reset link has been sent.';
+
   try {
-    const user = await db.getDb().collection('users').findOne({ email: email.toLowerCase().trim() });
-
-    // Always show the same message to prevent email enumeration
-    const successMsg = 'If an account with that email exists, a reset link has been sent.';
-
+    const user = await db.getDb().collection('users').findOne({ email });
     if (!user) {
       return render(null, successMsg);
     }
@@ -221,80 +205,82 @@ exports.postForgotPassword = async (req, res) => {
 
     await db.getDb().collection('users').updateOne(
       { _id: user._id },
-      { $set: { resetToken: token, resetTokenExpiry: expiry } }
+      { $set: { resetToken: hashToken(token), resetTokenExpiry: expiry } }
     );
 
     const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
     const resetLink = `${baseUrl}/auth/reset-password/${token}`;
 
-    await sendPasswordResetEmail(user.email, resetLink);
+    try {
+      await sendPasswordResetEmail(user.email, resetLink);
+    } catch (mailErr) {
+      // Logged for the admin; the visitor still sees the same message so the
+      // response doesn't reveal whether the account exists
+      console.error('Password reset email failed:', mailErr.message);
+    }
 
     render(null, successMsg);
   } catch (err) {
-    console.error('Forgot password error:', err);
-    render('Server error. Please try again.', null);
+    next(err);
   }
 };
 
+async function findUserByResetToken(token) {
+  if (!/^[a-f0-9]{64}$/.test(token)) return null;
+  return db.getDb().collection('users').findOne({
+    resetToken: hashToken(token),
+    resetTokenExpiry: { $gt: new Date() },
+  });
+}
+
 // GET /auth/reset-password/:token
-exports.getResetPassword = async (req, res) => {
+exports.getResetPassword = async (req, res, next) => {
   const { token } = req.params;
   try {
-    const user = await db.getDb().collection('users').findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: new Date() },
-    });
-
+    const user = await findUserByResetToken(token);
     if (!user) {
       return res.render('reset-password', {
         error: 'This reset link is invalid or has expired.',
         token: null,
         title: 'Reset Password',
+        minLength: MIN_PASSWORD_LENGTH
       });
     }
-
-    res.render('reset-password', { error: null, token, title: 'Reset Password' });
+    res.render('reset-password', { error: null, token, title: 'Reset Password', minLength: MIN_PASSWORD_LENGTH });
   } catch (err) {
-    console.error('Reset password GET error:', err);
-    res.render('reset-password', { error: 'Server error. Please try again.', token: null, title: 'Reset Password' });
+    next(err);
   }
 };
 
 // POST /auth/reset-password/:token
-exports.postResetPassword = async (req, res) => {
+exports.postResetPassword = async (req, res, next) => {
   const { token } = req.params;
-  const { password, confirmPassword } = req.body;
+  const password = typeof req.body.password === 'string' ? req.body.password : '';
+  const confirmPassword = typeof req.body.confirmPassword === 'string' ? req.body.confirmPassword : '';
 
   const renderError = (msg) =>
-    res.render('reset-password', { error: msg, token, title: 'Reset Password' });
+    res.status(400).render('reset-password', { error: msg, token, title: 'Reset Password', minLength: MIN_PASSWORD_LENGTH });
 
-  if (!password || password.length < 6) {
-    return renderError('Password must be at least 6 characters.');
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return renderError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
   }
   if (password !== confirmPassword) {
     return renderError('Passwords do not match.');
   }
 
   try {
-    const user = await db.getDb().collection('users').findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: new Date() },
-    });
-
+    const user = await findUserByResetToken(token);
     if (!user) {
       return renderError('This reset link is invalid or has expired.');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     await db.getDb().collection('users').updateOne(
       { _id: user._id },
-      { $set: { password: hashedPassword }, $unset: { resetToken: '', resetTokenExpiry: '' } }
+      { $set: { password: await bcrypt.hash(password, 10) }, $unset: { resetToken: '', resetTokenExpiry: '' } }
     );
 
     res.redirect('/auth/login?reset=success');
   } catch (err) {
-    console.error('Reset password POST error:', err);
-    renderError('Server error. Please try again.');
+    next(err);
   }
 };

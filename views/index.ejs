@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <%- include('partials/head', { title: title }) %>
-  <link rel="stylesheet" href="/css/style.css">
   <body>
     <%- include('partials/header') %>
     <main>
       <!-- Hero Section -->
-      <section class="hero" style="background-image: url('/images/hero.jpg');" loading="lazy">
+      <section class="hero">
         <div class="hero-overlay">
           <div class="hero-content">
             <h1>Welcome to Calvary Christian College</h1>
@@ -19,17 +18,17 @@
       <!-- First Grid Section -->
       <section class="grid-section">
         <div class="grid-item">
-          <img src="/images/vision.jpg" alt="Vision">
+          <img src="/images/vision.webp" alt="Vision" loading="lazy">
           <h3>Our Vision</h3>
           <p>Raising Christ-centered, Spirit-empowered servant leaders.</p>
         </div>
         <div class="grid-item">
-          <img src="/images/mission.jpg" alt="Mission">
+          <img src="/images/mission.webp" alt="Mission" loading="lazy">
           <h3>Our Mission</h3>
           <p>Training and equipping students for ministry and leadership.</p>
         </div>
         <div class="grid-item">
-          <img src="/images/values.jpg" alt="Core Values">
+          <img src="/images/values.webp" alt="Core Values" loading="lazy">
           <h3>Core Values</h3>
           <p>Christ-Centered • Integrity • Servanthood • Excellence • Impact</p>
         </div>
@@ -39,7 +38,11 @@
       <% if (!user) { %>
         <section class="cta">
           <p>Ready to join us? Start your journey today!</p>
-          <a href="/auth/login" class="btn-primary">Login And Apply Now<br>Register as a Student<br>Join Alumni</a>
+          <div class="cta-buttons">
+            <a href="/auth/login" class="btn-primary">Login &amp; Apply Now</a>
+            <a href="/auth/register?role=student" class="btn-primary">Register as a Student</a>
+            <a href="/auth/register?role=alumni" class="btn-primary">Join Alumni</a>
+          </div>
         </section>
       <% } else { %>
         <section class="cta">
@@ -74,17 +77,17 @@
       <!-- Second Grid Section -->
       <section class="grid-section">
         <div class="grid-item">
-          <img src="/images/discipleship.jpg" alt="Discipleship">
+          <img src="/images/discipleship.webp" alt="Discipleship" loading="lazy">
           <h3>Discipleship</h3>
           <p>Grow deeper in your faith and spiritual walk with Christ.</p>
         </div>
         <div class="grid-item">
-          <img src="/images/ministry.jpg" alt="Ministry Training">
+          <img src="/images/ministry.webp" alt="Ministry Training" loading="lazy">
           <h3>Ministry Training</h3>
           <p>Get equipped to serve in your calling with excellence.</p>
         </div>
         <div class="grid-item">
-          <img src="/images/community.jpg" alt="Community Impact">
+          <img src="/images/community.webp" alt="Community Impact" loading="lazy">
           <h3>Community Impact</h3>
           <p>Transforming communities through the power of the Gospel.</p>
         </div>

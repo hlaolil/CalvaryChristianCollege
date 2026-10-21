@@ -1,107 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', { title: title }) %>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    /* ---- Responsive table ---- */
-    .table-wrapper {
-      overflow-x: auto;
-      margin: 1rem 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,.1);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .95rem;
-      background: #fff;
-    }
-    th, td {
-      padding: .75rem;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    thead th {
-      background: #e8f5e9;
-      position: sticky;
-      top: 0;
-    }
-
-    /* Sortable headers */
-    th.sortable {
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      padding-right: 28px !important;
-    }
-    th.sortable:hover {
-      background: #c8e6c9 !important;
-    }
-    th.sortable::after {
-      content: "↕";
-      position: absolute;
-      right: 8px;
-      opacity: 0.5;
-      font-size: 0.9em;
-    }
-    th.sortable.asc::after {
-      content: "↑";
-      opacity: 1;
-      font-weight: bold;
-    }
-    th.sortable.desc::after {
-      content: "↓";
-      opacity: 1;
-      font-weight: bold;
-    }
-
-    /* Mobile: stack rows */
-    @media (max-width: 640px) {
-      .table-wrapper { overflow-x: hidden; }
-      table, thead, tbody, th, td, tr { display: block; }
-      thead tr { position: absolute; top: -9999px; left: -9999px; }
-      tr {
-        margin-bottom: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        padding: .5rem;
-        background: #fafafa;
-        box-shadow: 0 1px 3px rgba(0,0,0,.08);
-      }
-      td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-        white-space: normal;
-        word-wrap: break-word;
-      }
-      td:before {
-        content: attr(data-label);
-        position: absolute;
-        left: 6px;
-        width: 45%;
-        font-weight: bold;
-        white-space: nowrap;
-        color: #444;
-      }
-    }
-
-    /* General styles */
-    .error { color: red; font-weight: bold; }
-    .success { color: green; font-weight: bold; }
-    .warning { color: orange; font-weight: bold; }
-    .info { color: #1976d2; font-weight: bold; }
-    main a { color: #1976d2; text-decoration: none; }
-    main a:hover { text-decoration: underline; }
-  </style>
-</head>
+<%- include('partials/head', { title: title, styles: ['/css/pages/student-portal.css'] }) %>
 <body>
   <%- include('partials/header') %>
   <main class="container">
     <h1>Student Portal</h1>
     <% if (error) { %>
-      <p class="error"><%= error %></p>
+      <p class="error" role="alert"><%= error %></p>
     <% } %>
 
     <!-- ==================== CURRENT STUDENT PROFILE ==================== -->
@@ -131,7 +36,9 @@
           <p class="info">Your application is under review.</p>
         <% } %>
       <% } else if (user.role === 'student') { %>
-        <p class="warning">No application found. <a href="/apply">Apply Now</a></p>
+        <p><strong>Program of Study:</strong> <%= user.programOfStudy || '—' %></p>
+      <% } else if (user.role === 'applicant') { %>
+        <p class="info">You are not enrolled yet. <a href="/apply">View or submit your application</a>.</p>
       <% } %>
     </div>
 
@@ -141,7 +48,7 @@
       <h2>All Students</h2>
       <% if (allStudents.length > 0) { %>
         <div class="table-wrapper">
-          <table id="students-table">
+          <table id="students-table" data-offset="<%= page.offset %>">
             <thead>
               <tr>
                 <th>#</th>
@@ -150,14 +57,14 @@
                 <th class="sortable">Email</th>
                 <th class="sortable">Phone</th>
                 <th class="sortable">Program</th>
-                <th class="sortable">App Status</th>
-                <th class="sortable">Submitted</th>
+                <th class="sortable" data-sort="status">App Status</th>
+                <th class="sortable" data-sort="date">Submitted</th>
               </tr>
             </thead>
             <tbody>
               <% allStudents.forEach((s, i) => { %>
                 <tr>
-                  <td data-label="#"> <%= i + 1 %> </td>
+                  <td data-label="#"> <%= page.offset + i + 1 %> </td>
                   <td data-label="Student #"> <code><%= s.studentNumber || '—' %></code> </td>
                   <td data-label="Name"> <%= s.name %> </td>
                   <td data-label="Email"> <%= s.email %> </td>
@@ -168,7 +75,7 @@
                       <%= s.application.status || 'Pending' %>
                     </span>
                   </td>
-                  <td data-label="Submitted">
+                  <td data-label="Submitted" data-value="<%= s.application.submittedAt ? new Date(s.application.submittedAt).toISOString() : '' %>">
                     <%= s.application.submittedAt ? new Date(s.application.submittedAt).toLocaleDateString() : '—' %>
                   </td>
                 </tr>
@@ -176,6 +83,7 @@
             </tbody>
           </table>
         </div>
+        <%- include('partials/pagination', { page, label: 'Student pages' }) %>
       <% } else { %>
         <p><em>No students registered yet.</em></p>
       <% } %>
@@ -186,77 +94,5 @@
 
   <%- include('partials/footer') %>
 
-  <!-- Client-side sortable table script -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const table = document.getElementById("students-table");
-      if (!table) return;
-
-      const headers = table.querySelectorAll("th.sortable");
-
-      headers.forEach(header => {
-        header.addEventListener("click", () => {
-          const index = Array.from(header.parentNode.children).indexOf(header);
-          const isAsc = header.classList.toggle("asc");
-          if (!isAsc) header.classList.add("desc");
-          else header.classList.remove("desc");
-
-          // Reset other headers
-          headers.forEach(h => {
-            if (h !== header) h.classList.remove("asc", "desc");
-          });
-
-          sortTable(table, index, isAsc);
-        });
-      });
-
-      function sortTable(table, columnIndex, ascending) {
-        const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-
-        rows.sort((rowA, rowB) => {
-          const cellA = rowA.children[columnIndex];
-          const cellB = rowB.children[columnIndex];
-
-          let valA = cellA.textContent.trim();
-          let valB = cellB.textContent.trim();
-
-          // Special handling for date column (Submitted)
-          if (columnIndex === 7) { // Submitted date column
-            if (valA === '—') valA = '';
-            if (valB === '—') valB = '';
-            if (!valA && !valB) return 0;
-            if (!valA) return ascending ? 1 : -1;
-            if (!valB) return ascending ? -1 : 1;
-
-            const dateA = new Date(valA);
-            const dateB = new Date(valB);
-            return ascending ? dateA - dateB : dateB - dateA;
-          }
-
-          // Special handling for App Status (sort by text: Pending → Approved → Rejected)
-          if (columnIndex === 6) {
-            const order = { 'Pending': 0, 'Approved': 1, 'Rejected': 2 };
-            const aOrder = order[valA] ?? -1;
-            const bOrder = order[valB] ?? -1;
-            return ascending ? aOrder - bOrder : bOrder - aOrder;
-          }
-
-          // Natural sort for everything else (numbers and strings)
-          return ascending
-            ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' })
-            : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: 'base' });
-        });
-
-        // Re-append rows in sorted order
-        rows.forEach(row => tbody.appendChild(row));
-
-        // Re-number the # column
-        tbody.querySelectorAll("tr").forEach((row, i) => {
-          row.children[0].textContent = i + 1;
-        });
-      }
-    });
-  </script>
 </body>
 </html>

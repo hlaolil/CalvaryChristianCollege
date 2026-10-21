@@ -1,0 +1,207 @@
+/* apply page */
+/* Action buttons */
+.action-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+}
+.approve-btn  { background: #2e7d32; }
+.approve-btn:hover:not(:disabled)  { background: #1b5e20; }
+.reject-btn   { background: #d32f2f; }
+.reject-btn:hover:not(:disabled)   { background: #b71c1c; }
+.pending-btn  { background: #f57c00; }
+.pending-btn:hover:not(:disabled)  { background: #e65100; }
+.action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.action-btns  { display: flex; gap: 4px; flex-wrap: wrap; }
+/* Form Styling */
+.application-form {
+  max-width: 100%;
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 1rem;
+}
+.form-section {
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.form-section h2 {
+  margin: 0 0 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+  font-size: 1.3rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+label {
+  font-weight: 600;
+  color: #333;
+}
+input, select, textarea {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(25,118,210,.2);
+}
+input[readonly] {
+  background: #f5f5f5;
+  color: var(--gray);
+  cursor: not-allowed;
+}
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #1565c0;
+}
+/* Messages */
+.success { color: var(--success); font-weight: bold; }
+.error { color: var(--error); font-weight: bold; }
+
+/* Back link */
+main a {
+  color: var(--primary);
+  text-decoration: none;
+}
+main a:hover { text-decoration: underline; }
+
+/* ==================== ADMIN APPLICATIONS TABLE ==================== */
+.admin-applications {
+  margin-top: 2.5rem;
+}
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+  background: #fff;
+}
+#applications-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .95rem;
+}
+#applications-table th, #applications-table td {
+  padding: .9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+#applications-table thead th {
+  background: #e3f2fd;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+#applications-table tbody tr:hover {
+  background: #f5faff;
+}
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 30px !important;
+}
+th.sortable:hover {
+  background: #bbdefb !important;
+}
+th.sortable::after {
+  content: "↕";
+  position: absolute;
+  right: 10px;
+  opacity: 0.5;
+  font-size: 1em;
+}
+th.sortable.asc::after {
+  content: "↑";
+  opacity: 1;
+  font-weight: bold;
+}
+th.sortable.desc::after {
+  content: "↓";
+  opacity: 1;
+  font-weight: bold;
+}
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: .85rem;
+  font-weight: bold;
+  color: white;
+}
+.status-pending { background: orange; }
+.status-approved { background: var(--success); }
+.status-rejected { background: var(--error); }
+
+/* Mobile stacked view */
+@media (max-width: 640px) {
+  .table-wrapper { overflow-x: hidden; }
+  #applications-table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead tr { position: absolute; top: -9999px; left: -9999px; }
+  tr {
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    background: #fafafa;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    padding-top: .6rem;
+    padding-bottom: .6rem;
+  }
+  td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    width: 45%;
+    font-weight: bold;
+    color: #444;
+    white-space: nowrap;
+  }
+  .details-cell { padding-left: 12px; }
+}
+
+/* Print-friendly */
+@media print {
+  .form-section, .table-wrapper { box-shadow: none; border: 1px solid #aaa; }
+}

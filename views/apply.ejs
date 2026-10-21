@@ -1,226 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', { title: title }) %>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    :root {
-      --primary: #1976d2;
-      --success: #2e7d32;
-      --error: #d32f2f;
-      --gray: #555;
-      --light: #f9f9f9;
-      --border: #ddd;
-    }
-    /* Action buttons */
-    .action-btn {
-      padding: 4px 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: white;
-      white-space: nowrap;
-    }
-    .approve-btn  { background: #2e7d32; }
-    .approve-btn:hover:not(:disabled)  { background: #1b5e20; }
-    .reject-btn   { background: #d32f2f; }
-    .reject-btn:hover:not(:disabled)   { background: #b71c1c; }
-    .pending-btn  { background: #f57c00; }
-    .pending-btn:hover:not(:disabled)  { background: #e65100; }
-    .action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .action-btns  { display: flex; gap: 4px; flex-wrap: wrap; }
-    /* Form Styling */
-    .application-form {
-      max-width: 100%;
-      margin: 1.5rem 0;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      font-size: 1rem;
-    }
-    .form-section {
-      background: #fff;
-      padding: 1.2rem;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    }
-    .form-section h2 {
-      margin: 0 0 1rem;
-      padding-bottom: .5rem;
-      border-bottom: 2px solid var(--primary);
-      color: var(--primary);
-      font-size: 1.3rem;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-    label {
-      font-weight: 600;
-      color: #333;
-    }
-    input, select, textarea {
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      width: 100%;
-      box-sizing: border-box;
-      transition: border 0.2s;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(25,118,210,.2);
-    }
-    input[readonly] {
-      background: #f5f5f5;
-      color: var(--gray);
-      cursor: not-allowed;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.9rem 1.8rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      align-self: flex-start;
-      margin-top: 0.5rem;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: #1565c0;
-    }
-    /* Messages */
-    .success { color: var(--success); font-weight: bold; }
-    .error { color: var(--error); font-weight: bold; }
-
-    /* Back link */
-    main a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-    main a:hover { text-decoration: underline; }
-
-    /* ==================== ADMIN APPLICATIONS TABLE ==================== */
-    .admin-applications {
-      margin-top: 2.5rem;
-    }
-    .table-wrapper {
-      overflow-x: auto;
-      margin: 1.5rem 0;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.1);
-      background: #fff;
-    }
-    #applications-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .95rem;
-    }
-    #applications-table th, #applications-table td {
-      padding: .9rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    #applications-table thead th {
-      background: #e3f2fd;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    #applications-table tbody tr:hover {
-      background: #f5faff;
-    }
-    th.sortable {
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      padding-right: 30px !important;
-    }
-    th.sortable:hover {
-      background: #bbdefb !important;
-    }
-    th.sortable::after {
-      content: "↕";
-      position: absolute;
-      right: 10px;
-      opacity: 0.5;
-      font-size: 1em;
-    }
-    th.sortable.asc::after {
-      content: "↑";
-      opacity: 1;
-      font-weight: bold;
-    }
-    th.sortable.desc::after {
-      content: "↓";
-      opacity: 1;
-      font-weight: bold;
-    }
-    .status-badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: .85rem;
-      font-weight: bold;
-      color: white;
-    }
-    .status-pending { background: orange; }
-    .status-approved { background: var(--success); }
-    .status-rejected { background: var(--error); }
-
-    /* Mobile stacked view */
-    @media (max-width: 640px) {
-      .table-wrapper { overflow-x: hidden; }
-      #applications-table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      thead tr { position: absolute; top: -9999px; left: -9999px; }
-      tr {
-        margin-bottom: 1rem;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1rem;
-        background: #fafafa;
-        box-shadow: 0 1px 4px rgba(0,0,0,.08);
-      }
-      td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-        padding-top: .6rem;
-        padding-bottom: .6rem;
-      }
-      td:before {
-        content: attr(data-label);
-        position: absolute;
-        left: 12px;
-        width: 45%;
-        font-weight: bold;
-        color: #444;
-        white-space: nowrap;
-      }
-      .details-cell { padding-left: 12px; }
-    }
-
-    /* Print-friendly */
-    @media print {
-      .form-section, .table-wrapper { box-shadow: none; border: 1px solid #aaa; }
-    }
-  </style>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
+<%- include('partials/head', { title: title, styles: ['/css/pages/apply.css'] }) %>
 <body>
   <%- include('partials/header') %>
   <main class="container">
@@ -258,41 +38,39 @@
           <p class="info">Your application is under review. We will be in touch soon.</p>
         <% } %>
       </div>
-    <% } else if (user.role === 'applicant' || user.role === 'admin') { %>
-      <form class="application-form" action="/apply" method="POST" novalidate>
-        <% if (typeof csrfToken !== 'undefined') { %>
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <% } %>
+    <% } else if (user.role === 'applicant') { %>
+      <form class="application-form" action="/apply" method="POST" data-restore="<%= JSON.stringify(form) %>">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <!-- Personal Information -->
         <div class="form-section">
           <h2>Personal Information</h2>
           <div class="form-group">
-            <label>Name:</label>
-            <input type="text" name="name" value="<%= user.name %>" readonly>
+            <label for="f-name">Name:</label>
+            <input id="f-name" type="text" name="name" value="<%= user.name %>" readonly>
           </div>
           <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" value="<%= user.email %>" readonly>
+            <label for="f-email">Email:</label>
+            <input id="f-email" type="email" name="email" value="<%= user.email %>" readonly>
           </div>
           <div class="form-group">
-            <label>Phone Number *:</label>
-            <input type="tel" name="phone" required placeholder="+266 1234 5678">
+            <label for="f-phone">Phone Number *:</label>
+            <input id="f-phone" type="tel" name="phone" required autocomplete="tel" placeholder="+266 5812 3456" value="<%= user.phoneNumber || '' %>">
           </div>
           <div class="form-group">
-            <label>Date of Birth *:</label>
-            <input type="date" name="dob" required max="<%= new Date().toISOString().split('T')[0] %>">
+            <label for="f-dob">Date of Birth *:</label>
+            <input id="f-dob" type="date" name="dob" required max="<%= new Date().toISOString().split('T')[0] %>">
           </div>
           <div class="form-group">
-            <label>Street Address *:</label>
-            <input type="text" name="street_address" required placeholder="123 Main Street">
+            <label for="f-street_address">Street Address *:</label>
+            <input id="f-street_address" type="text" name="street_address" required placeholder="123 Main Street">
           </div>
           <div class="form-group">
-            <label>Town/City *:</label>
-            <input type="text" name="town" required placeholder="Maseru">
+            <label for="f-town">Town/City *:</label>
+            <input id="f-town" type="text" name="town" required placeholder="Maseru">
           </div>
           <div class="form-group">
-            <label>District *:</label>
-            <select name="district" required>
+            <label for="f-district">District *:</label>
+            <select id="f-district" name="district" required>
               <option value="">Select District</option>
               <% ['Berea','Butha-Buthe','Leribe','Mafeteng','Maseru','Mohale\'s Hoek','Mokhotlong','Qacha\'s Nek','Quthing','Thaba-Tseka'].forEach(d => { %>
                 <option value="<%= d %>"><%= d %></option>
@@ -300,34 +78,34 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Postal Code *:</label>
-            <input type="text" name="postal_code" required placeholder="100">
+            <label for="f-postal_code">Postal Code *:</label>
+            <input id="f-postal_code" type="text" name="postal_code" required placeholder="100">
           </div>
           <div class="form-group">
-            <label>Country:</label>
-            <input type="text" name="country" value="Lesotho" readonly>
+            <label for="f-country">Country:</label>
+            <input id="f-country" type="text" name="country" value="Lesotho" readonly>
           </div>
         </div>
         <!-- High School -->
         <div class="form-section">
           <h2>High School Education</h2>
           <div class="form-group">
-            <label>High School *:</label>
-            <input type="text" name="high_school" required placeholder="Maseru High School">
+            <label for="f-high_school">High School *:</label>
+            <input id="f-high_school" type="text" name="high_school" required placeholder="Maseru High School">
           </div>
           <div class="form-group">
-            <label>Graduation Year *:</label>
-            <input type="number" name="grad_year" required min="1950" max="2030" placeholder="2024">
+            <label for="f-grad_year">Graduation Year *:</label>
+            <input id="f-grad_year" type="number" name="grad_year" required min="1950" max="<%= currentYear %>" placeholder="<%= currentYear - 1 %>">
           </div>
         </div>
         <!-- Church / Spiritual -->
         <div class="form-section">
           <h2>Church & Spiritual Information</h2>
           <% const yesNo = ['','Yes','No']; %>
-          <% ['salvation','baptism','holy_spirit','church_member','ministerial_credentials'].forEach(field => { %>
+          <% yesNoFields.forEach(field => { %>
             <div class="form-group">
-              <label><%= field.replace(/_/g,' ').replace(/\b\w/g, l => l.toUpperCase()) %> *:</label>
-              <select name="<%= field %>" required>
+              <label for="f-<%= field %>"><%= field.replace(/_/g,' ').replace(/\b\w/g, l => l.toUpperCase()) %> *:</label>
+              <select id="f-<%= field %>" name="<%= field %>" required>
                 <% yesNo.forEach(opt => { %>
                   <option value="<%= opt %>"><%= opt || 'Select' %></option>
                 <% }) %>
@@ -335,89 +113,78 @@
             </div>
           <% }) %>
           <div class="form-group">
-            <label>Current Church Name *:</label>
-            <input type="text" name="current_church_name" required>
+            <label for="f-current_church_name">Current Church Name *:</label>
+            <input id="f-current_church_name" type="text" name="current_church_name" required>
           </div>
           <div class="form-group">
-            <label>Current Church City *:</label>
-            <input type="text" name="current_church_city" required>
+            <label for="f-current_church_city">Current Church City *:</label>
+            <input id="f-current_church_city" type="text" name="current_church_city" required>
           </div>
           <div class="form-group">
-            <label>Current Church Country *:</label>
-            <input type="text" name="current_church_country" required value="Lesotho">
+            <label for="f-current_church_country">Current Church Country *:</label>
+            <input id="f-current_church_country" type="text" name="current_church_country" required value="Lesotho">
           </div>
           <div class="form-group">
-            <label>Pastor's Name *:</label>
-            <input type="text" name="pastor_name" required>
+            <label for="f-pastor_name">Pastor's Name *:</label>
+            <input id="f-pastor_name" type="text" name="pastor_name" required>
           </div>
           <div class="form-group">
-            <label>Church Denominational Affiliation *:</label>
-            <input type="text" name="church_denomination" required placeholder="e.g., Assemblies of God">
+            <label for="f-church_denomination">Church Denominational Affiliation *:</label>
+            <input id="f-church_denomination" type="text" name="church_denomination" required placeholder="e.g., Assemblies of God">
           </div>
           <div class="form-group">
-            <label>Personal Denominational Affiliation *:</label>
-            <input type="text" name="personal_denomination" required>
+            <label for="f-personal_denomination">Personal Denominational Affiliation *:</label>
+            <input id="f-personal_denomination" type="text" name="personal_denomination" required>
           </div>
           <div class="form-group">
-            <label>Ministry Positions *:</label>
-            <textarea name="ministry_positions" rows="4" required placeholder="List all current positions (e.g., Youth Leader, Worship Team)..."></textarea>
+            <label for="f-ministry_positions">Ministry Positions *:</label>
+            <textarea id="f-ministry_positions" name="ministry_positions" rows="4" required placeholder="List all current positions (e.g., Youth Leader, Worship Team)..."></textarea>
           </div>
           <div class="form-group">
-            <label>National Church Leader Name *:</label>
-            <input type="text" name="national_leader_name" required>
+            <label for="f-national_leader_name">National Church Leader Name *:</label>
+            <input id="f-national_leader_name" type="text" name="national_leader_name" required>
           </div>
           <div class="form-group">
-            <label>Position *:</label>
-            <input type="text" name="national_leader_position" required>
+            <label for="f-national_leader_position">Position *:</label>
+            <input id="f-national_leader_position" type="text" name="national_leader_position" required>
           </div>
           <div class="form-group">
-            <label>Address & Contact *:</label>
-            <textarea name="national_leader_address" rows="3" required placeholder="Full address, phone, email..."></textarea>
+            <label for="f-national_leader_address">Address & Contact *:</label>
+            <textarea id="f-national_leader_address" name="national_leader_address" rows="3" required placeholder="Full address, phone, email..."></textarea>
           </div>
         </div>
         <!-- Program -->
         <div class="form-section">
           <h2>Program Information</h2>
           <div class="form-group">
-            <label>Program *:</label>
-            <select name="program" required>
+            <label for="f-program">Program *:</label>
+            <select id="f-program" name="program" required>
               <option value="">Select Program</option>
-              <optgroup label="Level 1">
-                <option value="Level 1 Certificate in Christian Discipleship">Level 1 Certificate in Christian Discipleship</option>
-              </optgroup>
-              <optgroup label="Level 2">
-                <option value="Level 2 Diploma in Christian Leadership">Level 2 Diploma in Christian Leadership</option>
-                <option value="Level 2 Certificate in Theology">Level 2 Certificate in Theology</option>
-                <option value="Level 2 Certificate in Biblical Studies">Level 2 Certificate in Biblical Studies</option>
-              </optgroup>
-              <optgroup label="Level 3">
-                <option value="Level 3 Advanced Diploma in Ministry">Level 3 Advanced Diploma in Ministry</option>
-                <option value="Level 3 Diploma in Theology">Level 3 Diploma in Theology</option>
-                <option value="Level 3 Diploma in Biblical Studies">Level 3 Diploma in Biblical Studies</option>
-                <option value="Level 3 Diploma in Business Leadership">Level 3 Diploma in Business Leadership</option>
-              </optgroup>
-              <optgroup label="Level 4">
-                <option value="Level 4 Higher Diploma in Shepherding">Level 4 Higher Diploma in Shepherding</option>
-              </optgroup>
-              <optgroup label="Level 5">
-                <option value="Level 5 Bachelor of Ministry">Level 5 Bachelor of Ministry</option>
-              </optgroup>
+              <% programGroups.forEach(group => { %>
+                <optgroup label="Level <%= group.level %>">
+                  <% group.programs.forEach(p => { %>
+                    <option value="<%= p.title %>" <%= p.available ? '' : 'disabled' %>><%= p.title %><%= p.available ? '' : ' (Coming Soon)' %></option>
+                  <% }) %>
+                </optgroup>
+              <% }) %>
             </select>
           </div>
           <div class="form-group">
-            <label>Semester *:</label>
-            <select name="semester" required>
-              <option value="">Select Semester</option>
-              <option value="January 2026">January 2026</option>
-              <option value="July 2026">July 2026</option>
-              <option value="January 2027">January 2027</option>
+            <label for="f-semester">Intake *:</label>
+            <select id="f-semester" name="semester" required>
+              <option value="">Select Intake</option>
+              <% semesters.forEach(sem => { %>
+                <option value="<%= sem %>"><%= sem %></option>
+              <% }) %>
             </select>
           </div>
           <div class="form-group">
-            <label>Message (Optional):</label>
-            <textarea name="message" rows="4" placeholder="Any additional information..."></textarea>
+            <label for="f-message">Message (Optional):</label>
+            <textarea id="f-message" name="message" rows="4" placeholder="Any additional information..."></textarea>
           </div>
-          <p><strong>Application Fee: M200</strong> (Payable upon submission)</p>
+          <p><strong>Application Fee: M200</strong> (payable upon submission).
+            The college's banking details are under <button type="button" class="link-button" data-open-dialog="donateModal">Donate</button> in the menu.
+            If you need help with payment, please <a href="/contact">contact us</a>.</p>
           <button type="submit">Submit Application</button>
         </div>
       </form>
@@ -430,9 +197,9 @@
         <hr>
         <div class="admin-applications">
           <h2>All Submitted Applications</h2>
-          <% if (applications && applications.length > 0) { %>
+          <% if (applications.length > 0) { %>
             <div class="table-wrapper">
-              <table id="applications-table">
+              <table id="applications-table" data-offset="<%= page.offset %>">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -441,8 +208,8 @@
                     <th class="sortable">Phone</th>
                     <th class="sortable">Program</th>
                     <th class="sortable">Semester</th>
-                    <th class="sortable">Status</th>
-                    <th class="sortable">Submitted</th>
+                    <th class="sortable" data-sort="status">Status</th>
+                    <th class="sortable" data-sort="date">Submitted</th>
                     <th>Actions</th>
                     <th>Details</th>
                   </tr>
@@ -450,7 +217,7 @@
                 <tbody>
                   <% applications.forEach((app, index) => { %>
                     <tr>
-                      <td data-label="#"> <%= index + 1 %> </td>
+                      <td data-label="#"> <%= page.offset + index + 1 %> </td>
                       <td data-label="Name"> <%= app.name %> </td>
                       <td data-label="Email"> <%= app.email %> </td>
                       <td data-label="Phone"> <%= app.phone %> </td>
@@ -461,11 +228,13 @@
                           <%= (app.status || 'Pending').toUpperCase() %>
                         </span>
                       </td>
-                      <td data-label="Submitted">
+                      <td data-label="Submitted" data-value="<%= app.submittedAt ? new Date(app.submittedAt).toISOString() : '' %>">
                         <%= new Date(app.submittedAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %>
                       </td>
                       <td data-label="Actions" class="details-cell">
                         <form action="/apply/<%= app._id %>/status" method="POST">
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <input type="hidden" name="returnTo" value="?page=<%= page.current %>">
                           <div class="action-btns">
                             <button type="submit" name="status" value="Approved" class="action-btn approve-btn"
                               <%= (app.status||'pending').toLowerCase() === 'approved' ? 'disabled' : '' %>>Approve</button>
@@ -494,6 +263,7 @@
                 </tbody>
               </table>
             </div>
+            <%- include('partials/pagination', { page, label: 'Application pages' }) %>
           <% } else { %>
             <p><em>No applications submitted yet.</em></p>
           <% } %>
@@ -505,65 +275,5 @@
 
   <%- include('partials/footer') %>
 
-  <!-- Client-side sorting for applications table -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const table = document.getElementById("applications-table");
-      if (!table) return;
-
-      const headers = table.querySelectorAll("th.sortable");
-
-      headers.forEach(header => {
-        header.addEventListener("click", () => {
-          const index = Array.from(header.parentNode.children).indexOf(header);
-          const isAsc = header.classList.toggle("asc");
-          if (!isAsc) header.classList.add("desc");
-          else header.classList.remove("desc");
-
-          headers.forEach(h => {
-            if (h !== header) h.classList.remove("asc", "desc");
-          });
-
-          sortTable(table, index, isAsc);
-        });
-      });
-
-      function sortTable(table, columnIndex, ascending) {
-        const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-
-        rows.sort((a, b) => {
-          let valA = a.children[columnIndex].textContent.trim();
-          let valB = b.children[columnIndex].textContent.trim();
-
-          // Date column (Submitted)
-          if (columnIndex === 7) {
-            const dateA = new Date(valA);
-            const dateB = new Date(valB);
-            return ascending ? dateA - dateB : dateB - dateA;
-          }
-
-          // Status column - logical order: Pending → Approved → Rejected
-          if (columnIndex === 6) {
-            const order = { 'PENDING': 0, 'APPROVED': 1, 'REJECTED': 2 };
-            const aOrder = order[valA.toUpperCase()] ?? -1;
-            const bOrder = order[valB.toUpperCase()] ?? -1;
-            return ascending ? aOrder - bOrder : bOrder - aOrder;
-          }
-
-          // Natural sort for text
-          return ascending
-            ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' })
-            : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: 'base' });
-        });
-
-        // Re-append sorted rows and renumber #
-        rows.forEach((row, i) => {
-          tbody.appendChild(row);
-          row.children[0].textContent = i + 1;
-        });
-      }
-    });
-  </script>
 </body>
 </html>

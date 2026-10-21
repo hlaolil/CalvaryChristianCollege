@@ -1,8 +1,7 @@
-// HomeController.js
-const db = require('../db/connect');
+// controllers/homeController.js
+// `user` and `path` come from res.locals (set in app.js)
 
 exports.getHome = (req, res) => {
-  // No need to pass user — it's in res.locals.user
   res.render('index', { title: 'Home' });
 };
 

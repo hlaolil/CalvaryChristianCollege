@@ -8,49 +8,49 @@
       <div class="auth-container">
         <h1>Already Logged In</h1>
         <p style="text-align:center;">You're logged in as <strong><%= user.name %></strong></p>
-        <a href="/academics" class="btn-primary" style="display:block;text-align:center;margin-top:1rem;">Go to Dashboard</a>
-        <p style="text-align:center;margin-top:1rem;"><a href="/auth/logout">Logout</a></p>
+        <a href="<%= homeHref %>" class="btn-primary" style="display:block;text-align:center;margin-top:1rem;">Go to Dashboard</a>
       </div>
     <% } else { %>
 
       <div class="auth-container" style="max-width:560px;">
         <h1>Create Account</h1>
 
-        <% if (error) { %><p class="error"><%= error %></p><% } %>
+        <% if (error) { %><p class="error" role="alert"><%= error %></p><% } %>
 
-        <form class="auth-form" action="/auth/register" method="POST" novalidate>
+        <form class="auth-form" action="/auth/register" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
           <div class="form-group">
             <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required autocomplete="name" placeholder="John Doe">
+            <input type="text" id="name" name="name" required autocomplete="name" placeholder="John Doe" value="<%= form.name || '' %>">
           </div>
 
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com">
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com" value="<%= form.email || '' %>">
           </div>
 
           <div class="form-group">
             <label for="phoneNumber">Phone Number</label>
-            <input type="tel" id="phoneNumber" name="phoneNumber" required autocomplete="tel" placeholder="+266 1234 5678">
+            <input type="tel" id="phoneNumber" name="phoneNumber" required autocomplete="tel" placeholder="+266 5812 3456" value="<%= form.phoneNumber || '' %>">
           </div>
 
           <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="At least 6 characters">
+            <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters">
           </div>
 
           <div class="form-group">
-            <label for="role">Role</label>
+            <label for="role">I am registering as</label>
             <select id="role" name="role" required>
               <% roles.forEach(r => { %>
-                <option value="<%= r %>"><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
+                <option value="<%= r %>" <%= form.role === r ? 'selected' : '' %>><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
               <% }) %>
             </select>
           </div>
 
           <!-- ADMIN ONLY -->
-          <div id="admin-secret" style="display:none;">
+          <div id="admin-secret" <%= form.role === 'admin' ? '' : 'hidden' %>>
             <div class="form-group">
               <label for="adminSecret">Admin Secret Key</label>
               <input type="password" id="adminSecret" name="adminSecret" autocomplete="off" placeholder="Enter admin secret">
@@ -58,36 +58,25 @@
           </div>
 
           <!-- STUDENT ONLY -->
-          <div id="student-fields" style="display:none;">
+          <div id="student-fields" <%= form.role === 'student' ? '' : 'hidden' %>>
             <div class="form-group" style="margin-bottom:1rem;">
               <label for="studentNumber">Student Number</label>
-              <input type="text" id="studentNumber" name="studentNumber" maxlength="6"
-                     placeholder="6 alphanumeric characters (e.g. AB1234)" style="text-transform:uppercase;">
+              <input type="text" id="studentNumber" name="studentNumber" maxlength="6" pattern="[A-Za-z0-9]{6}"
+                     placeholder="6 letters or digits (e.g. AB1234)" style="text-transform:uppercase;" value="<%= form.studentNumber || '' %>">
             </div>
             <div class="form-group">
               <label for="programOfStudy">Program of Study</label>
               <select id="programOfStudy" name="programOfStudy">
                 <option value="">-- Select Program --</option>
-                <optgroup label="Level 1 Programs">
-                  <option value="Level 1 Certificate in Christian Discipleship">Level 1 Certificate in Christian Discipleship</option>
-                </optgroup>
-                <optgroup label="Level 2 Programs">
-                  <option value="Level 2 Diploma in Christian Leadership">Level 2 Diploma in Christian Leadership</option>
-                  <option value="Level 2 Certificate in Theology" disabled>Level 2 Certificate in Theology (Coming Soon)</option>
-                  <option value="Level 2 Certificate in Biblical Studies" disabled>Level 2 Certificate in Biblical Studies (Coming Soon)</option>
-                </optgroup>
-                <optgroup label="Level 3 Programs">
-                  <option value="Level 3 Advanced Diploma in Ministry">Level 3 Advanced Diploma in Ministry</option>
-                  <option value="Level 3 Diploma in Theology" disabled>Level 3 Diploma in Theology (Coming Soon)</option>
-                  <option value="Level 3 Diploma in Biblical Studies" disabled>Level 3 Diploma in Biblical Studies (Coming Soon)</option>
-                  <option value="Level 3 Diploma in Business Leadership" disabled>Level 3 Diploma in Business Leadership (Coming Soon)</option>
-                </optgroup>
-                <optgroup label="Level 4 Programs">
-                  <option value="Level 4 Higher Diploma in Shepherding">Level 4 Higher Diploma in Shepherding</option>
-                </optgroup>
-                <optgroup label="Level 5 Programs">
-                  <option value="Level 5 Bachelor of Ministry">Level 5 Bachelor of Ministry</option>
-                </optgroup>
+                <% programGroups.forEach(group => { %>
+                  <optgroup label="Level <%= group.level %> Programs">
+                    <% group.programs.forEach(p => { %>
+                      <option value="<%= p.title %>" <%= p.available ? '' : 'disabled' %> <%= form.programOfStudy === p.title ? 'selected' : '' %>>
+                        <%= p.title %><%= p.available ? '' : ' (Coming Soon)' %>
+                      </option>
+                    <% }) %>
+                  </optgroup>
+                <% }) %>
               </select>
             </div>
           </div>
@@ -101,20 +90,5 @@
   </main>
 
   <%- include('partials/footer') %>
-
-  <script>
-    const roleSelect     = document.getElementById('role');
-    const adminSecretDiv = document.getElementById('admin-secret');
-    const studentDiv     = document.getElementById('student-fields');
-
-    function toggleFields() {
-      const role = roleSelect.value;
-      adminSecretDiv.style.display = role === 'admin'   ? 'block' : 'none';
-      studentDiv.style.display     = role === 'student' ? 'block' : 'none';
-    }
-
-    roleSelect.addEventListener('change', toggleFields);
-    toggleFields();
-  </script>
 </body>
 </html>

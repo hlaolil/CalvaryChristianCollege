@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <%- include('partials/head', { title: 'About Us' }) %>
+  <%- include('partials/head', { title: title }) %>
   <body>
     <%- include('partials/header') %>
     <main class="container about-page">
@@ -39,7 +39,15 @@
       <section class="cta">
         <h3>Ready to join us?</h3>
         <p>Start your journey today!</p>
-        <a href="/apply" class="btn-primary">Apply Now</a>
+        <% if (!user) { %>
+          <p>Create a free account to fill in the application form.</p>
+          <a href="/auth/register?role=applicant" class="btn-primary">Create an Account to Apply</a>
+          <p style="margin-top:1rem;">Already registered? <a href="/auth/login" style="color:white;text-decoration:underline;">Log in</a></p>
+        <% } else if (user.role === 'applicant') { %>
+          <a href="/apply" class="btn-primary">Apply Now</a>
+        <% } else { %>
+          <a href="<%= homeHref %>" class="btn-primary">Go to Dashboard</a>
+        <% } %>
       </section>
     </main>
     <%- include('partials/footer') %>
