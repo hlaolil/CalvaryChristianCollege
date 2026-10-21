@@ -97,49 +97,6 @@ th.sortable.desc::after {
   opacity: 1;
   font-weight: bold;
 }
-/* Mobile: Stack table rows */
-@media (max-width: 640px) {
-  .table-wrapper {
-    overflow-x: hidden;
-  }
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-  tr {
-    margin-bottom: 1.2rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    background: #fafafa;
-    box-shadow: 0 1px 3px rgba(0,0,0,.08);
-  }
-  td {
-    border: none;
-    position: relative;
-    padding-left: 50%;
-    padding-top: .5rem;
-    padding-bottom: .5rem;
-  }
-  td:before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    width: 45%;
-    font-weight: bold;
-    color: #444;
-    white-space: nowrap;
-  }
-  td.message-cell {
-    padding-left: 12px;
-    white-space: normal;
-    word-wrap: break-word;
-  }
-}
 /* Message column width on desktop */
 @media (min-width: 641px) {
   td.message-cell {
