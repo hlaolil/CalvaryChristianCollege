@@ -192,6 +192,29 @@ a:hover { text-decoration: underline; }
 .cta h2 { color: white; margin-top: 0; }
 .cta p  { font-size: 1.2rem; margin-bottom: 1rem; }
 
+.cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* CTA box is primary blue, so its buttons need contrast to read as links */
+.cta .btn-primary {
+  background: white;
+  color: var(--primary);
+  border: 2px solid white;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cta .btn-primary:hover,
+.cta .btn-primary:focus-visible {
+  background: transparent;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
 /* ========================================
    Intro & Highlights
    ======================================== */

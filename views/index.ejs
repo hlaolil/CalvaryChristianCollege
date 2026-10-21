@@ -39,7 +39,11 @@
       <% if (!user) { %>
         <section class="cta">
           <p>Ready to join us? Start your journey today!</p>
-          <a href="/auth/login" class="btn-primary">Login And Apply Now<br>Register as a Student<br>Join Alumni</a>
+          <div class="cta-buttons">
+            <a href="/auth/login" class="btn-primary">Login &amp; Apply Now</a>
+            <a href="/auth/register?role=student" class="btn-primary">Register as a Student</a>
+            <a href="/auth/register?role=alumni" class="btn-primary">Join Alumni</a>
+          </div>
         </section>
       <% } else { %>
         <section class="cta">

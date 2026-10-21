@@ -40,7 +40,8 @@ exports.getRegister = (req, res) => {
   res.render('register', {
     error: null,
     title: 'Register',
-    roles: ['applicant', 'student', 'alumni', 'admin']
+    roles: ['applicant', 'student', 'alumni', 'admin'],
+    selectedRole: req.query.role
   });
 };
 

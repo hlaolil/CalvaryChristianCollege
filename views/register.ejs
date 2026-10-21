@@ -44,7 +44,7 @@
             <label for="role">Role</label>
             <select id="role" name="role" required>
               <% roles.forEach(r => { %>
-                <option value="<%= r %>"><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
+                <option value="<%= r %>" <%= (typeof selectedRole !== 'undefined' && selectedRole === r) ? 'selected' : '' %>><%= r.charAt(0).toUpperCase() + r.slice(1) %></option>
               <% }) %>
             </select>
           </div>
