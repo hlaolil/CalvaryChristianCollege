@@ -1,75 +1,86 @@
 // controllers/contactController.js
 const db = require('../db/connect');
+const { str, isValidEmail } = require('../utils/validate');
+const { paginate, emptyPage } = require('../utils/pagination');
 
-// GET /contact – show form + admin: users + contacts
-exports.getContact = async (req, res) => {
+// Never send password hashes or reset tokens to the template
+const USER_LIST_PROJECTION = { name: 1, email: 1, phoneNumber: 1, role: 1, createdAt: 1 };
+
+// Renders the contact page; admins also see all users and all contact messages
+async function renderContact(req, res, { error = null, form = {}, status = 200 } = {}) {
+  const user = req.session.user;
   let users = [];
   let contacts = [];
+  let usersPage = emptyPage('upage');
+  let contactsPage = emptyPage('cpage');
 
-  // Only admins see data
-  if (req.session.user?.role === 'admin') {
-    try {
-      // === ALL USERS ===
-      const userCursor = db.getDb()
-        .collection('users')
-        .find()
-        .sort({ createdAt: -1 });
-      users = await userCursor.toArray();
-
-      // === ALL CONTACT MESSAGES ===
-      const contactCursor = db.getDb()
-        .collection('contacts')
-        .find()
-        .sort({ date: -1 });
-      contacts = await contactCursor.toArray();
-    } catch (err) {
-      console.error('Failed to load admin data:', err);
-    }
+  if (user?.role === 'admin') {
+    const database = db.getDb();
+    ({ items: users, page: usersPage } = await paginate(database.collection('users'), {
+      sort: { createdAt: -1 },
+      projection: USER_LIST_PROJECTION,
+      pageParam: 'upage',
+      req
+    }));
+    ({ items: contacts, page: contactsPage } = await paginate(database.collection('contacts'), {
+      sort: { date: -1 },
+      pageParam: 'cpage',
+      req
+    }));
   }
 
-  res.render('contact', {
+  res.status(status).render('contact', {
     title: 'Contact Us',
-    user: req.session.user,
-    users,        // ← all users
-    contacts,     // ← all contact form submissions
+    users,
+    contacts,
+    usersPage,
+    contactsPage,
+    form,
     success: req.query.success === 'true',
-    error: null
+    error
   });
+}
+
+// GET /contact
+exports.getContact = async (req, res, next) => {
+  try {
+    await renderContact(req, res);
+  } catch (err) {
+    next(err);
+  }
 };
 
-// POST /contact – unchanged (your current logic)
-exports.sendContact = async (req, res) => {
-  const { name, email, message, phone } = req.body;
-
-  if (!name?.trim() || !email?.trim() || !message?.trim()) {
-    return res.render('contact', {
-      title: 'Contact Us',
-      user: req.session.user,
-      success: false,
-      error: 'All fields (name, email, message) are required.'
-    });
-  }
+// POST /contact
+exports.sendContact = async (req, res, next) => {
+  const user = req.session.user;
+  // Logged-in users can't edit their name/email on the form, so use the account's
+  const name = user ? user.name : str(req.body.name);
+  const email = user ? user.email : str(req.body.email).toLowerCase();
+  const phone = str(req.body.phone);
+  const message = str(req.body.message);
+  const form = { name, email, phone, message };
 
   try {
-    console.log('Contact form submitted:', req.body);
+    if (!name || !email || !message) {
+      return renderContact(req, res, { error: 'All fields (name, email, message) are required.', form, status: 400 });
+    }
+    if (!isValidEmail(email)) {
+      return renderContact(req, res, { error: 'Please enter a valid email address.', form, status: 400 });
+    }
+    if (message.length > 5000) {
+      return renderContact(req, res, { error: 'Please keep your message under 5000 characters.', form, status: 400 });
+    }
 
     await db.getDb().collection('contacts').insertOne({
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone?.trim() || '',
-      message: message.trim(),
+      name,
+      email,
+      phone,
+      message,
       date: new Date()
     });
 
-    console.log('Contact saved to DB');
     res.redirect('/contact?success=true');
-  } catch (error) {
-    console.error('Error in contact form submission:', error);
-    res.render('contact', {
-      title: 'Contact Us',
-      user: req.session.user,
-      success: false,
-      error: 'An error occurred while submitting your message. Please try again later.'
-    });
+  } catch (err) {
+    next(err);
   }
 };

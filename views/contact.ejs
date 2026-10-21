@@ -1,176 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', { title: title }) %>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    /* General Form Styling */
-    .contact-form {
-      max-width: 100%;
-      margin: 1.5rem 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .contact-form label {
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      display: block;
-    }
-    .contact-form input,
-    .contact-form textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-    .contact-form input[readonly] {
-      background: #f5f5f5;
-      color: #555;
-    }
-    .contact-form textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-    .contact-form button {
-      background: #1976d2;
-      color: white;
-      border: none;
-      padding: 0.85rem 1.5rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      align-self: flex-start;
-      margin-top: 0.5rem;
-    }
-    .contact-form button:hover {
-      background: #1565c0;
-    }
-    /* Responsive Tables */
-    .table-wrapper {
-      overflow-x: auto;
-      margin: 1.5rem 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,.1);
-      background: #fff;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .95rem;
-    }
-    th, td {
-      padding: .75rem;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    thead th {
-      background: #e3f2fd;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    tbody tr:hover {
-      background: #f9f9f9;
-    }
-    /* Sortable header styles */
-    th.sortable {
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      padding-right: 28px !important;
-    }
-    th.sortable:hover {
-      background: #bbdefb !important;
-    }
-    th.sortable::after {
-      content: "↕";
-      position: absolute;
-      right: 8px;
-      opacity: 0.4;
-      font-size: 0.9em;
-    }
-    th.sortable.asc::after {
-      content: "↑";
-      opacity: 1;
-      font-weight: bold;
-    }
-    th.sortable.desc::after {
-      content: "↓";
-      opacity: 1;
-      font-weight: bold;
-    }
-    /* Mobile: Stack table rows */
-    @media (max-width: 640px) {
-      .table-wrapper {
-        overflow-x: hidden;
-      }
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-      }
-      tr {
-        margin-bottom: 1.2rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 1rem;
-        background: #fafafa;
-        box-shadow: 0 1px 3px rgba(0,0,0,.08);
-      }
-      td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-        padding-top: .5rem;
-        padding-bottom: .5rem;
-      }
-      td:before {
-        content: attr(data-label);
-        position: absolute;
-        left: 12px;
-        width: 45%;
-        font-weight: bold;
-        color: #444;
-        white-space: nowrap;
-      }
-      td.message-cell {
-        padding-left: 12px;
-        white-space: normal;
-        word-wrap: break-word;
-      }
-    }
-    /* Message column width on desktop */
-    @media (min-width: 641px) {
-      td.message-cell {
-        max-width: 400px;
-        word-wrap: break-word;
-      }
-    }
-    /* Success / Error */
-    .success {
-      color: green;
-      font-weight: bold;
-    }
-    .error {
-      color: red;
-      font-weight: bold;
-    }
-    /* Back link */
-    main a {
-      color: #1976d2;
-      text-decoration: none;
-    }
-    main a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
+<%- include('partials/head', { title: title, styles: ['/css/pages/contact.css'] }) %>
 <body>
   <%- include('partials/header') %>
   <main class="container">
@@ -179,18 +9,19 @@
       <p class="success">Thank you! Your message has been sent.</p>
     <% } %>
     <% if (error) { %>
-      <p class="error"><%= error %></p>
+      <p class="error" role="alert"><%= error %></p>
     <% } %>
     <!-- ==================== CONTACT FORM ==================== -->
-    <form class="contact-form" action="/contact" method="POST">
-      <label>Name *:</label>
-      <input type="text" name="name" required value="<%= user?.name || '' %>" <%= user ? 'readonly' : '' %>>
-      <label>Email *:</label>
-      <input type="email" name="email" required value="<%= user?.email || '' %>" <%= user ? 'readonly' : '' %>>
-      <label>Phone (Optional):</label>
-      <input type="tel" name="phone" placeholder="+266 1234 5678">
-      <label>Message *:</label>
-      <textarea name="message" rows="6" required placeholder="How can we help you?"></textarea>
+    <form class="contact-form" action="/contact" method="POST" data-restore="<%= JSON.stringify(form) %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label for="f-name">Name *:</label>
+      <input id="f-name" type="text" name="name" required value="<%= user?.name || '' %>" <%= user ? 'readonly' : '' %>>
+      <label for="f-email">Email *:</label>
+      <input id="f-email" type="email" name="email" required value="<%= user?.email || '' %>" <%= user ? 'readonly' : '' %>>
+      <label for="f-phone">Phone (Optional):</label>
+      <input id="f-phone" type="tel" name="phone" autocomplete="tel" placeholder="+266 5812 3456">
+      <label for="f-message">Message *:</label>
+      <textarea id="f-message" name="message" rows="6" required maxlength="5000" placeholder="How can we help you?"></textarea>
       <button type="submit">Send Message</button>
     </form>
     <p><a href="/">Back to Home</a></p>
@@ -200,32 +31,32 @@
       <!-- === ALL USERS === -->
       <hr>
       <h2>All Registered Users</h2>
-      <% if (users && users.length > 0) { %>
+      <% if (users.length > 0) { %>
         <div class="table-wrapper">
-          <table>
+          <table data-offset="<%= usersPage.offset %>">
             <thead>
               <tr>
                 <th>#</th>
                 <th class="sortable">Name</th>
                 <th class="sortable">Email</th>
-                <th class="sortable">Phone</th> <!-- NEW COLUMN -->
+                <th class="sortable">Phone</th>
                 <th class="sortable">Role</th>
-                <th class="sortable">Joined</th>
+                <th class="sortable" data-sort="date">Joined</th>
               </tr>
             </thead>
             <tbody>
               <% users.forEach((u, i) => { %>
                 <tr>
-                  <td data-label="#"> <%= i + 1 %> </td>
+                  <td data-label="#"> <%= usersPage.offset + i + 1 %> </td>
                   <td data-label="Name"> <%= u.name || '—' %> </td>
                   <td data-label="Email"> <%= u.email %> </td>
-                  <td data-label="Phone"> <%= u.phoneNumber || '—' %> </td> <!-- Fixed here -->
+                  <td data-label="Phone"> <%= u.phoneNumber || '—' %> </td>
                   <td data-label="Role">
                     <span class="badge <%= u.role === 'admin' ? 'badge-admin' : '' %>">
                       <%= (u.role || 'user').toUpperCase() %>
                     </span>
                   </td>
-                  <td data-label="Joined">
+                  <td data-label="Joined" data-value="<%= u.createdAt ? new Date(u.createdAt).toISOString() : '' %>">
                     <%= u.createdAt ? new Date(u.createdAt).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) : '—' %>
                   </td>
                 </tr>
@@ -233,6 +64,7 @@
             </tbody>
           </table>
         </div>
+        <%- include('partials/pagination', { page: usersPage, label: 'User pages' }) %>
       <% } else { %>
         <p><em>No users found.</em></p>
       <% } %>
@@ -240,9 +72,9 @@
       <!-- === ALL CONTACT MESSAGES === -->
       <hr>
       <h2>All Contact Form Submissions</h2>
-      <% if (contacts && contacts.length > 0) { %>
+      <% if (contacts.length > 0) { %>
         <div class="table-wrapper">
-          <table>
+          <table data-offset="<%= contactsPage.offset %>">
             <thead>
               <tr>
                 <th>#</th>
@@ -250,18 +82,18 @@
                 <th class="sortable">Email</th>
                 <th class="sortable">Phone</th>
                 <th class="sortable">Message</th>
-                <th class="sortable">Submitted</th>
+                <th class="sortable" data-sort="date">Submitted</th>
               </tr>
             </thead>
             <tbody>
               <% contacts.forEach((c, i) => { %>
                 <tr>
-                  <td data-label="#"> <%= i + 1 %> </td>
+                  <td data-label="#"> <%= contactsPage.offset + i + 1 %> </td>
                   <td data-label="Name"> <%= c.name %> </td>
                   <td data-label="Email"> <%= c.email %> </td>
                   <td data-label="Phone"> <%= c.phone || '—' %> </td>
                   <td data-label="Message" class="message-cell"><%= c.message %></td>
-                  <td data-label="Submitted">
+                  <td data-label="Submitted" data-value="<%= c.date ? new Date(c.date).toISOString() : '' %>">
                     <%= new Date(c.date).toLocaleString('en-LS', { timeZone: 'Africa/Maseru' }) %>
                   </td>
                 </tr>
@@ -269,6 +101,7 @@
             </tbody>
           </table>
         </div>
+        <%- include('partials/pagination', { page: contactsPage, label: 'Message pages' }) %>
       <% } else { %>
         <p><em>No contact messages yet.</em></p>
       <% } %>
@@ -276,57 +109,5 @@
   </main>
   <%- include('partials/footer') %>
 
-  <!-- Client-side table sorting script (unchanged – works with new column) -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.querySelectorAll(".table-wrapper table").forEach(table => {
-        const thead = table.querySelector("thead");
-        if (!thead) return;
-        const headers = thead.querySelectorAll("th.sortable");
-        headers.forEach(header => {
-          header.addEventListener("click", () => {
-            const index = Array.from(header.parentNode.children).indexOf(header);
-            const isAsc = header.classList.toggle("asc");
-            if (!isAsc) header.classList.add("desc");
-            else header.classList.remove("desc");
-            // Reset other headers
-            headers.forEach(h => {
-              if (h !== header) {
-                h.classList.remove("asc", "desc");
-              }
-            });
-            sortTable(table, index, isAsc);
-          });
-        });
-      });
-      function sortTable(table, columnIndex, ascending) {
-        const tbody = table.querySelector("tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-        rows.sort((a, b) => {
-          const aCell = a.children[columnIndex];
-          const bCell = b.children[columnIndex];
-          let aText = aCell.textContent.trim();
-          let bText = bCell.textContent.trim();
-          // Detect and sort date columns
-          const datePattern = /\d{1,2}\/\d{1,2}\/\d{4},\s\d{1,2}:\d{2}:\d{2}\s[AP]M/;
-          if (datePattern.test(aText) && datePattern.test(bText)) {
-            const aDate = new Date(aText.replace(/,/g, ""));
-            const bDate = new Date(bText.replace(/,/g, ""));
-            return ascending ? aDate - bDate : bDate - aDate;
-          }
-          // Sort role by the text inside the span
-          if (aCell.querySelector("span") && bCell.querySelector("span")) {
-            aText = aCell.querySelector("span").textContent.trim();
-            bText = bCell.querySelector("span").textContent.trim();
-          }
-          // Natural alphanumeric sort
-          return ascending
-            ? aText.localeCompare(bText, undefined, { numeric: true, sensitivity: 'base' })
-            : bText.localeCompare(aText, undefined, { numeric: true, sensitivity: 'base' });
-        });
-        rows.forEach(row => tbody.appendChild(row));
-      }
-    });
-  </script>
 </body>
 </html>

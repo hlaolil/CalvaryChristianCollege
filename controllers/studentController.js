@@ -1,71 +1,55 @@
 // controllers/studentController.js
 const db = require('../db/connect');
+const { paginate, emptyPage } = require('../utils/pagination');
 
-exports.getStudentPortal = async (req, res) => {
+const NO_APPLICATION = { status: 'No Application', program: '—', semester: '—' };
+
+exports.getStudentPortal = async (req, res, next) => {
   const user = req.session.user;
   let studentApp = null;
   let allStudents = [];
+  let page = emptyPage('page');
 
   try {
-    // === 1. Current student's application ===
-    if (user.role === 'student' || user.role === 'admin') {
-      studentApp = await db.getDb()
-        .collection('applications')
-        .findOne({ userId: user.id });
+    const database = db.getDb();
+
+    // === 1. Current student's application (students promoted from applicants have one) ===
+    if (user.role === 'student') {
+      studentApp = await database.collection('applications').findOne({ userId: user.id });
     }
 
-    // === 2. Admin: Get ALL students with phone & program ===
+    // === 2. Admin: one page of students, joined to their applications in a single query ===
     if (user.role === 'admin') {
-      // Ensure createdAt exists
-      await db.getDb().collection('users').updateMany(
-        { createdAt: { $exists: false } },
-        { $set: { createdAt: new Date() } }
-      );
+      let students;
+      ({ items: students, page } = await paginate(database.collection('users'), {
+        query: { role: 'student' },
+        sort: { createdAt: -1 },
+        projection: { name: 1, email: 1, studentNumber: 1, phoneNumber: 1, programOfStudy: 1, createdAt: 1 },
+        pageParam: 'page',
+        req
+      }));
 
-      const cursor = db.getDb()
-        .collection('users')
-        .find({ role: 'student' })
-        .project({
-          name: 1,
-          email: 1,
-          studentNumber: 1,
-          phoneNumber: 1,           // ← ADD THIS
-          programOfStudy: 1,        // ← ADD THIS
-          createdAt: 1
-        })
-        .sort({ createdAt: -1 });
+      const ids = students.map(s => s._id.toString());
+      const applications = await database.collection('applications')
+        .find({ userId: { $in: ids } })
+        .project({ userId: 1, status: 1, program: 1, semester: 1, submittedAt: 1 })
+        .toArray();
+      const byUser = new Map(applications.map(a => [a.userId, a]));
 
-      const students = await cursor.toArray();
-      console.log(`DEBUG: Found ${students.length} students with phone & program`);
-
-      allStudents = await Promise.all(
-        students.map(async (s) => {
-          const app = await db.getDb()
-            .collection('applications')
-            .findOne({ userId: s._id.toString() });
-          return {
-            ...s,
-            application: app || { status: 'No Application', program: '—', semester: '—' }
-          };
-        })
-      );
+      allStudents = students.map(s => ({
+        ...s,
+        application: byUser.get(s._id.toString()) || NO_APPLICATION
+      }));
     }
 
     res.render('student-portal', {
       title: 'Student Portal',
-      user,
       studentApp,
       allStudents,
+      page,
       error: null
     });
   } catch (err) {
-    console.error('Student portal error:', err);
-    res.render('student-portal', {
-      title: 'Student Portal',
-      user,
-      studentApp: null,
-      allStudents: [],
-      error: 'Failed to load portal.'
-    });
+    next(err);
   }
 };

@@ -1,0 +1,91 @@
+/* student-portal page */
+/* ---- Responsive table ---- */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .95rem;
+  background: #fff;
+}
+th, td {
+  padding: .75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+thead th {
+  background: #e8f5e9;
+  position: sticky;
+  top: 0;
+}
+
+/* Sortable headers */
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 28px !important;
+}
+th.sortable:hover {
+  background: #c8e6c9 !important;
+}
+th.sortable::after {
+  content: "↕";
+  position: absolute;
+  right: 8px;
+  opacity: 0.5;
+  font-size: 0.9em;
+}
+th.sortable.asc::after {
+  content: "↑";
+  opacity: 1;
+  font-weight: bold;
+}
+th.sortable.desc::after {
+  content: "↓";
+  opacity: 1;
+  font-weight: bold;
+}
+
+/* Mobile: stack rows */
+@media (max-width: 640px) {
+  .table-wrapper { overflow-x: hidden; }
+  table, thead, tbody, th, td, tr { display: block; }
+  thead tr { position: absolute; top: -9999px; left: -9999px; }
+  tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: .5rem;
+    background: #fafafa;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 6px;
+    width: 45%;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #444;
+  }
+}
+
+/* General styles */
+.error { color: red; font-weight: bold; }
+.success { color: green; font-weight: bold; }
+.warning { color: orange; font-weight: bold; }
+.info { color: #1976d2; font-weight: bold; }
+main a { color: #1976d2; text-decoration: none; }
+main a:hover { text-decoration: underline; }

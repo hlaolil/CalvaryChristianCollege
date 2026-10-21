@@ -66,7 +66,7 @@ a:hover { text-decoration: underline; }
    ======================================== */
 .hero {
   position: relative;
-  background: url('/images/hero-bg.jpg') no-repeat center center / cover;
+  background: url('/images/hero.webp') no-repeat center center / cover;
   min-height: 40vh;
   display: flex;
   align-items: center;
@@ -817,4 +817,187 @@ th.sortable.desc::after { content: "↓"; opacity: 1; font-weight: bold; }
 @media print {
   .table-wrapper, .form-section, .card { box-shadow: none; border: 1px solid #ccc; }
   .header, .footer { display: none; }
+}
+
+/* ========================================
+   Site header, navigation and donate dialog
+   (loaded last so it wins over earlier rules, as when it was inline)
+   ======================================== */
+* { box-sizing: border-box; margin:0; padding:0; }
+body { font-family: system-ui, -apple-system, Arial, sans-serif; line-height: 1.6; }
+
+/* ==================== HEADER ==================== */
+.header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+.header .container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.logo-container { flex-shrink: 0; }
+.logo {
+  height: 75px;
+  width: auto;
+  border-radius: var(--radius);
+  object-fit: contain;
+}
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--primary);
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+nav a {
+  color: var(--gray);
+  text-decoration: none;
+  font-weight: 500;
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  transition: all .2s;
+}
+nav a:hover,
+nav a.active {
+  background: rgba(25,118,210,.1);
+  color: var(--primary);
+}
+
+/* Donate Button Styling */
+nav .donate {
+  background: #d32f2f;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  border: none;
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s;
+}
+nav .donate:hover,
+nav .donate:focus-visible {
+  background: #b71c1c;
+}
+
+.user-nav { display: flex; align-items: center; gap: .75rem; }
+.inline-form { display: inline; margin: 0; }
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ==================== DONATE DIALOG ==================== */
+dialog.modal {
+  margin: auto; /* the global * { margin: 0 } reset would pin it to the top-left */
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 95vw;
+  max-height: 95vh;
+}
+dialog.modal::backdrop {
+  background: rgba(0,0,0,0.7);
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-height: 95vh;
+  overflow: auto;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.modal-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #333;
+}
+.close-btn:hover,
+.close-btn:focus-visible {
+  color: #d32f2f;
+}
+
+/* ==================== MOBILE MENU ==================== */
+@media (max-width: 768px) {
+  .nav-toggle { display: block; }
+  nav {
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
+  }
+  nav ul {
+    flex-direction: column;
+    align-items: stretch;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease, padding .3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  }
+  nav ul.open {
+    max-height: 500px;
+    padding: 1rem;
+  }
+  nav a, nav .donate { display: block; width: 100%; text-align: left; padding: .75rem 0; border-bottom: 1px solid #eee; }
+  nav .donate { padding: .75rem .6rem; }
+  nav a:last-child { border-bottom: none; }
+}
+
+/* ==================== PAGINATION ==================== */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
 }
