@@ -975,17 +975,23 @@ dialog.modal::backdrop {
     flex-direction: column;
     align-items: stretch;
     background: white;
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: var(--radius);
-    padding: 1rem;
+    /* Closed: no padding, border or shadow, so nothing peeks out; hidden
+       (after the slide-up finishes) so closed links can't be tabbed to */
+    padding: 0 1rem;
     max-height: 0;
     overflow: hidden;
-    transition: max-height .3s ease, padding .3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    visibility: hidden;
+    transition: max-height .3s ease, padding .3s ease, visibility 0s linear .3s;
   }
   nav ul.open {
     max-height: 500px;
     padding: 1rem;
+    visibility: visible;
+    border-color: var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    transition: max-height .3s ease, padding .3s ease, visibility 0s;
   }
   nav a, nav .donate { display: block; width: 100%; text-align: left; padding: .75rem 0; border-bottom: 1px solid #eee; }
   nav .donate { padding: .75rem .6rem; }
