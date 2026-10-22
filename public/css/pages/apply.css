@@ -1,22 +1,25 @@
 /* apply page */
-/* Action buttons */
-.action-btn {
-  padding: 4px 10px;
+/* Action buttons (two classes, to beat the site-wide button[type="submit"] style) */
+.action-btns .action-btn {
+  display: inline-block;
+  width: auto;
+  margin-top: 0;
+  padding: 6px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: white;
   white-space: nowrap;
 }
-.approve-btn  { background: #2e7d32; }
-.approve-btn:hover:not(:disabled)  { background: #1b5e20; }
-.reject-btn   { background: #d32f2f; }
-.reject-btn:hover:not(:disabled)   { background: #b71c1c; }
-.pending-btn  { background: #f57c00; }
-.pending-btn:hover:not(:disabled)  { background: #e65100; }
-.action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.action-btns .approve-btn  { background: #2e7d32; }
+.action-btns .approve-btn:hover:not(:disabled)  { background: #1b5e20; }
+.action-btns .reject-btn   { background: #d32f2f; }
+.action-btns .reject-btn:hover:not(:disabled)   { background: #b71c1c; }
+.action-btns .pending-btn  { background: #f57c00; }
+.action-btns .pending-btn:hover:not(:disabled)  { background: #e65100; }
+.action-btns .action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .action-btns  { display: flex; gap: 4px; flex-wrap: wrap; }
 /* Form Styling */
 .application-form {
@@ -166,40 +169,6 @@ th.sortable.desc::after {
 .status-pending { background: orange; }
 .status-approved { background: var(--success); }
 .status-rejected { background: var(--error); }
-
-/* Mobile stacked view */
-@media (max-width: 640px) {
-  .table-wrapper { overflow-x: hidden; }
-  #applications-table, thead, tbody, th, td, tr {
-    display: block;
-  }
-  thead tr { position: absolute; top: -9999px; left: -9999px; }
-  tr {
-    margin-bottom: 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem;
-    background: #fafafa;
-    box-shadow: 0 1px 4px rgba(0,0,0,.08);
-  }
-  td {
-    border: none;
-    position: relative;
-    padding-left: 50%;
-    padding-top: .6rem;
-    padding-bottom: .6rem;
-  }
-  td:before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    width: 45%;
-    font-weight: bold;
-    color: #444;
-    white-space: nowrap;
-  }
-  .details-cell { padding-left: 12px; }
-}
 
 /* Print-friendly */
 @media print {

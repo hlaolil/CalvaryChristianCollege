@@ -25,7 +25,7 @@
         <p><strong>Program:</strong> <%= existingApplication.program %></p>
         <p><strong>Semester:</strong> <%= existingApplication.semester %></p>
         <p><strong>Status:</strong>
-          <span class="status-badge status-<%= (existingApplication.status || 'pending').toLowerCase() %>">
+          <span class="status-badge status-<%= (existingApplication.status || 'pending').toLowerCase().replace(/\s+/g, '-') %>">
             <%= existingApplication.status || 'Pending' %>
           </span>
         </p>
@@ -224,7 +224,7 @@
                       <td data-label="Program"> <%= app.program %> </td>
                       <td data-label="Semester"> <%= app.semester %> </td>
                       <td data-label="Status">
-                        <span class="status-badge status-<%= (app.status || 'pending').toLowerCase() %>">
+                        <span class="status-badge status-<%= (app.status || 'pending').toLowerCase().replace(/\s+/g, '-') %>">
                           <%= (app.status || 'Pending').toUpperCase() %>
                         </span>
                       </td>

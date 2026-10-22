@@ -551,45 +551,50 @@ th.sortable::after { content: "↕"; position: absolute; right: 10px; opacity: 0
 th.sortable.asc::after  { content: "↑"; opacity: 1; font-weight: bold; }
 th.sortable.desc::after { content: "↓"; opacity: 1; font-weight: bold; }
 
-/* Mobile stacked table */
+/* Mobile stacked table: each row becomes a card, each cell a "label | value" pair.
+   A grid (not an absolutely positioned label) keeps long labels and values from overlapping. */
 @media (max-width: 640px) {
   .table-wrapper { overflow-x: hidden; }
 
-  table, thead, tbody, th, td, tr { display: block; }
-  thead tr { position: absolute; top: -9999px; left: -9999px; }
+  .table-wrapper table,
+  .table-wrapper thead,
+  .table-wrapper tbody,
+  .table-wrapper th,
+  .table-wrapper td,
+  .table-wrapper tr { display: block; }
+  .table-wrapper thead tr { position: absolute; top: -9999px; left: -9999px; }
 
-  tbody tr {
+  .table-wrapper tbody tr {
     margin-bottom: 1rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 0.75rem;
+    padding: 0.5rem 0.75rem;
     background: #fafafa;
     box-shadow: var(--shadow-sm);
   }
 
-  td {
+  .table-wrapper td {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, 38%) minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: start;
+    justify-items: start; /* badges and buttons keep their natural width */
     border: none;
-    position: relative;
-    padding-left: 50%;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding: 0.5rem 0;
     min-height: 2rem;
-    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
-  td::before {
+  .table-wrapper td::before {
     content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    width: 44%;
     font-weight: 700;
     color: #444;
-    white-space: nowrap;
     font-size: 0.85rem;
   }
 
-  .details-cell,
-  .message-cell { padding-left: 12px; }
+  /* Wide content (action buttons, details, messages) goes under its label */
+  .table-wrapper td.details-cell,
+  .table-wrapper td.message-cell { grid-template-columns: minmax(0, 1fr); row-gap: 0.4rem; }
 }
 
 /* ========================================
@@ -608,6 +613,7 @@ th.sortable.desc::after { content: "↓"; opacity: 1; font-weight: bold; }
 .status-pending  { background: var(--warning); }
 .status-approved { background: var(--success); }
 .status-rejected { background: var(--error); }
+.status-no-application { background: #757575; }
 
 .badge {
   display: inline-block;
@@ -900,9 +906,15 @@ nav .donate:focus-visible {
 
 .user-nav { display: flex; align-items: center; gap: .75rem; }
 .inline-form { display: inline; margin: 0; }
-.link-button {
+/* button.link-button beats the site-wide button[type="submit"] style */
+button.link-button,
+button.link-button:hover {
+  display: inline;
+  width: auto;
+  margin: 0;
   background: none;
   border: none;
+  box-shadow: none;
   padding: 0;
   font: inherit;
   color: var(--primary);

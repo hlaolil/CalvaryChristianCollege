@@ -23,7 +23,7 @@
         <p><strong>Program:</strong> <%= studentApp.program %></p>
         <p><strong>Semester:</strong> <%= studentApp.semester %></p>
         <p><strong>Status:</strong>
-          <span class="status-badge status-<%= (studentApp.status || 'pending').toLowerCase() %>">
+          <span class="status-badge status-<%= (studentApp.status || 'pending').toLowerCase().replace(/\s+/g, '-') %>">
             <%= studentApp.status || 'Pending' %>
           </span>
         </p>
@@ -71,7 +71,7 @@
                   <td data-label="Phone"> <%= s.phoneNumber || '—' %> </td>
                   <td data-label="Program"> <%= s.programOfStudy || '—' %> </td>
                   <td data-label="App Status">
-                    <span class="status-badge status-<%= (s.application.status || 'pending').toLowerCase() %>">
+                    <span class="status-badge status-<%= (s.application.status || 'pending').toLowerCase().replace(/\s+/g, '-') %>">
                       <%= s.application.status || 'Pending' %>
                     </span>
                   </td>

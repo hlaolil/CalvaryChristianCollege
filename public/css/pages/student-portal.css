@@ -51,37 +51,6 @@ th.sortable.desc::after {
   font-weight: bold;
 }
 
-/* Mobile: stack rows */
-@media (max-width: 640px) {
-  .table-wrapper { overflow-x: hidden; }
-  table, thead, tbody, th, td, tr { display: block; }
-  thead tr { position: absolute; top: -9999px; left: -9999px; }
-  tr {
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: .5rem;
-    background: #fafafa;
-    box-shadow: 0 1px 3px rgba(0,0,0,.08);
-  }
-  td {
-    border: none;
-    position: relative;
-    padding-left: 50%;
-    white-space: normal;
-    word-wrap: break-word;
-  }
-  td:before {
-    content: attr(data-label);
-    position: absolute;
-    left: 6px;
-    width: 45%;
-    font-weight: bold;
-    white-space: nowrap;
-    color: #444;
-  }
-}
-
 /* General styles */
 .error { color: red; font-weight: bold; }
 .success { color: green; font-weight: bold; }
